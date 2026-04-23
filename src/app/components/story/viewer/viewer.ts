@@ -10,15 +10,14 @@ export class StoryViewerComponent implements OnInit {
   @Input() storyText = '';
   @Input() needsInteraction = false;
   @Input() interactionPrompt = '';
+  @Input() opciones: string[] = [];
   @Input() isComplete = false;
   @Output() characterSelected = new EventEmitter<string>();
   @Output() restartStory = new EventEmitter<void>();
 
-  interactionCharacters = [
-    { name: 'Un Hada Madrina', icon: '🧚' },
-    { name: 'Un Gnomo Curioso', icon: '🍄' },
-    { name: 'Un Unicornio Blanco', icon: '🦄' },
-    { name: 'Un Dragón Amistoso', icon: '🐉' }
+  interactionOptions = [
+    { name: 'Ir por el camino de flores', icon: '🌸' },
+    { name: 'Hablar con el búho sabio', icon: '🦉' }
   ];
 
   isNarrating = false;

@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   currentStoryText = '';
   needsInteraction = false;
   interactionPrompt = '';
+  currentOptions: string[] = [];
   isComplete = false;
   isLoading = false;
   currentState$!: any;
@@ -50,6 +51,7 @@ export class AppComponent implements OnInit {
         this.currentStoryText = response.historia;
         this.needsInteraction = response.necesita_interaccion;
         this.interactionPrompt = response.prompt_interaccion || '';
+        this.currentOptions = response.opciones || [];
         this.isComplete = response.progreso.completado;
         
         this.storyState.appendToStory(response.historia);
@@ -85,6 +87,7 @@ export class AppComponent implements OnInit {
         this.currentStoryText = response.historia;
         this.needsInteraction = response.necesita_interaccion;
         this.interactionPrompt = response.prompt_interaccion || '';
+        this.currentOptions = response.opciones || [];
         this.isComplete = response.progreso.completado;
         
         this.storyState.appendToStory(response.historia);

@@ -3,6 +3,7 @@ export interface StoryResponse {
   audio_text: string;
   necesita_interaccion: boolean;
   prompt_interaccion?: string;
+  opciones?: string[];
   progreso: {
     completado: boolean;
     interaccion_actual: number;

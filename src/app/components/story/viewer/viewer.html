@@ -31,12 +31,23 @@
         <div class="interaction-section">
           <div class="interaction-prompt">
             <p class="prompt-text">{{ interactionPrompt }}</p>
-            <div class="choices-grid">
-              @for (char of interactionCharacters; track char.name) {
-                <div class="choice-card" (click)="onSelectCharacter(char.name)">
-                  <span class="choice-icon">{{ char.icon }}</span>
-                  <span class="choice-name">{{ char.name }}</span>
+            <div class="choices-container">
+              @if (opciones && opciones.length >= 2) {
+                <div class="choice-card large" (click)="onSelectCharacter(opciones[0])">
+                  <span class="choice-icon">✨</span>
+                  <span class="choice-name">{{ opciones[0] }}</span>
                 </div>
+                <div class="choice-card large" (click)="onSelectCharacter(opciones[1])">
+                  <span class="choice-icon">🔮</span>
+                  <span class="choice-name">{{ opciones[1] }}</span>
+                </div>
+              } @else {
+                @for (opt of interactionOptions; track opt.name) {
+                  <div class="choice-card large" (click)="onSelectCharacter(opt.name)">
+                    <span class="choice-icon">{{ opt.icon }}</span>
+                    <span class="choice-name">{{ opt.name }}</span>
+                  </div>
+                }
               }
             </div>
           </div>

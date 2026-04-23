@@ -28,8 +28,9 @@
       [storyText]="currentStoryText"
       [needsInteraction]="needsInteraction"
       [interactionPrompt]="interactionPrompt"
+      [opciones]="currentOptions"
       [isComplete]="isComplete"
-      (readyForNextDrawing)="onReadyForNextChoice()"
+      (characterSelected)="onCharacterSelected($event)"
       (restartStory)="onRestartStory()">
     </app-story-viewer>
   }
