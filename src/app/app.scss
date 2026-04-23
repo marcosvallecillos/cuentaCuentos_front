@@ -18,6 +18,19 @@
   z-index: 9999;
 }
 
+.close-loading {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  opacity: 0.5;
+  &:hover { opacity: 1; }
+}
+
 .spinner {
   font-size: 80px;
   animation: spin 2s linear infinite;

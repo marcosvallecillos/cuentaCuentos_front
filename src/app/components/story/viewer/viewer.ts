@@ -24,6 +24,7 @@ export class StoryViewerComponent implements OnInit {
   private utterance: SpeechSynthesisUtterance | null = null;
 
   ngOnInit() {
+    console.log('StoryViewer cargado con texto:', this.storyText.substring(0, 50) + '...');
     // Auto-narrar al cargar
     setTimeout(() => this.narrate(), 500);
   }

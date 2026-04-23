@@ -2,6 +2,7 @@
   <!-- Loading overlay -->
   @if (isLoading) {
     <div class="loading-overlay">
+      <button class="close-loading" (click)="isLoading = false">✕</button>
       <div class="spinner">✨</div>
       <p class="loading-text">Creando magia...</p>
     </div>

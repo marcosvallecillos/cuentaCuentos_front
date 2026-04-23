@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppState, StoryStateService } from './services/story-state.service';
 import { ApiService } from './services/api.service';
-import { filter } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +21,16 @@ export class AppComponent implements OnInit {
   isLoading = false;
   currentState$!: any;
 
+  cleanText(text: string): string {
+    return text
+      .replace(/\[Inicio de la historia\]/g, '')
+      .replace(/\[PAUSA_INTERACCION\]/g, '')
+      .replace(/\[OPCIONES\]/g, '')
+      .replace(/\[FIN\]/g, '')
+      .replace(/\[FINAL\]/g, '')
+      .trim();
+  }
+
   constructor(
     private storyState: StoryStateService,
     private api: ApiService
@@ -33,7 +43,8 @@ export class AppComponent implements OnInit {
 
     // Listen for transitions to STORY_VIEWING to trigger the initial story generation
     this.storyState.currentState$.pipe(
-      filter(state => state === AppState.STORY_VIEWING && this.currentStoryText === '')
+      filter(state => state === AppState.STORY_VIEWING && this.currentStoryText === ''),
+      take(1)
     ).subscribe(() => {
       this.generateInitialStory();
     });
@@ -48,6 +59,15 @@ export class AppComponent implements OnInit {
 
     this.api.generarHistoria(character, place, emotion, userAge).subscribe({
       next: (response) => {
+        console.log('--- API generacion historia exitosa ---');
+        console.log('Response:', response);
+        
+        // Forzamos el fin de la carga en el siguiente ciclo de detección
+        setTimeout(() => {
+          this.isLoading = false;
+          console.log('isLoading set to false');
+        }, 100);
+
         this.currentStoryText = response.historia;
         this.needsInteraction = response.necesita_interaccion;
         this.interactionPrompt = response.prompt_interaccion || '';
@@ -55,7 +75,6 @@ export class AppComponent implements OnInit {
         this.isComplete = response.progreso.completado;
         
         this.storyState.appendToStory(response.historia);
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error:', error);
@@ -84,6 +103,13 @@ export class AppComponent implements OnInit {
 
     this.api.continuarHistoria(this.currentStoryText, newCharacter, userAge, interactionNum).subscribe({
       next: (response) => {
+        console.log('--- API continuacion historia exitosa ---');
+        console.log('Response:', response);
+        
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 100);
+
         this.currentStoryText = response.historia;
         this.needsInteraction = response.necesita_interaccion;
         this.interactionPrompt = response.prompt_interaccion || '';
@@ -91,7 +117,6 @@ export class AppComponent implements OnInit {
         this.isComplete = response.progreso.completado;
         
         this.storyState.appendToStory(response.historia);
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error:', error);

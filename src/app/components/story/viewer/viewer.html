@@ -4,9 +4,13 @@
       <h2 class="story-title">📖 Tu Historia Mágica</h2>
       
       <div class="story-content">
-        <p class="story-text" [class.narrating]="isNarrating">
-          {{ storyText }}
-        </p>
+        @if (storyText) {
+          <p class="story-text" [class.narrating]="isNarrating">
+            {{ storyText }}
+          </p>
+        } @else {
+          <p class="story-text loading-placeholder">Esperando a que la magia se escriba...</p>
+        }
       </div>
 
       <div class="audio-controls">
