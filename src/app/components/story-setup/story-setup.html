@@ -1,0 +1,78 @@
+<div class="setup-split-container">
+  <!-- Left Side: Selection Interface -->
+  <div class="selection-panel">
+    <div class="step-indicator">
+      Paso {{ currentStep }} de 3
+    </div>
+
+    @if (currentStep === 1) {
+      <div class="step-content">
+        <h2 class="step-title">¿Quién será el protagonista?</h2>
+        <div class="options-grid">
+          @for (char of characters; track char.id) {
+            <div class="option-card" [class.selected]="selectedCharacter === char.name" (click)="selectedCharacter = char.name">
+              <span class="option-icon">{{ char.icon }}</span>
+              <span class="option-name">{{ char.name }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (currentStep === 2) {
+      <div class="step-content">
+        <h2 class="step-title">¿Dónde sucede la aventura?</h2>
+        <div class="options-grid">
+          @for (p of places; track p.id) {
+            <div class="option-card" [class.selected]="selectedPlace === p.name" (click)="selectedPlace = p.name">
+              <span class="option-icon">{{ p.icon }}</span>
+              <span class="option-name">{{ p.name }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (currentStep === 3) {
+      <div class="step-content">
+        <h2 class="step-title">¿Cómo se siente hoy?</h2>
+        <div class="options-grid">
+          @for (e of emotions; track e.id) {
+            <div class="option-card" [class.selected]="selectedEmotion === e.name" (click)="selectedEmotion = e.name">
+              <span class="option-icon">{{ e.icon }}</span>
+              <span class="option-name">{{ e.name }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="navigation-btns">
+      @if (currentStep > 1) {
+        <button class="nav-btn secondary" (click)="prevStep()">Atrás</button>
+      }
+      
+      @if (currentStep < 3) {
+        <button class="nav-btn primary" [disabled]="!canContinue()" (click)="nextStep()">Siguiente</button>
+      } @else {
+        <button class="nav-btn magic" [disabled]="!canContinue()" (click)="finishSetup()">✨ ¡Crear Historia!</button>
+      }
+    </div>
+  </div>
+
+  <!-- Right Side: Magical Preview -->
+  <div class="preview-panel">
+    <div class="book-preview">
+      <div class="page-content">
+        <div class="preview-stars">✨</div>
+        <h3 class="preview-title">Tu Nuevo Cuento</h3>
+        <ul class="preview-summary">
+          <li><strong>Protagonista:</strong> {{ selectedCharacter || '???' }}</li>
+          <li><strong>Lugar:</strong> {{ selectedPlace || '???' }}</li>
+          <li><strong>Emoción:</strong> {{ selectedEmotion || '???' }}</li>
+        </ul>
+        <p class="preview-hint">¡Elige todas las opciones para empezar la magia!</p>
+      </div>
+    </div>
+  </div>
+</div>

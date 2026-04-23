@@ -1,0 +1,58 @@
+<div class="story-viewer-container">
+  <div class="story-book">
+    <div class="book-page">
+      <h2 class="story-title">📖 Tu Historia Mágica</h2>
+      
+      <div class="story-content">
+        <p class="story-text" [class.narrating]="isNarrating">
+          {{ storyText }}
+        </p>
+      </div>
+
+      <div class="audio-controls">
+        <button 
+          class="audio-btn" 
+          (click)="narrate()"
+          [disabled]="isNarrating">
+          {{ isNarrating ? '🔊 Narrando...' : '🔊 Escuchar otra vez' }}
+        </button>
+        
+        @if (isNarrating) {
+          <button 
+            class="audio-btn stop-btn" 
+            (click)="stopNarration()">
+            ⏹️ Detener
+          </button>
+        }
+      </div>
+
+      <!-- Interacción -->
+      @if (needsInteraction) {
+        <div class="interaction-section">
+          <div class="interaction-prompt">
+            <p class="prompt-text">{{ interactionPrompt }}</p>
+            <div class="choices-grid">
+              @for (char of interactionCharacters; track char.name) {
+                <div class="choice-card" (click)="onSelectCharacter(char.name)">
+                  <span class="choice-icon">{{ char.icon }}</span>
+                  <span class="choice-name">{{ char.name }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+
+      <!-- Final -->
+      @if (isComplete) {
+        <div class="complete-section">
+          <h3 class="complete-title">🎉 ¡Historia Completa! 🎉</h3>
+          <button class="restart-btn" (click)="onRestart()">
+            🔄 Crear Nueva Historia
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

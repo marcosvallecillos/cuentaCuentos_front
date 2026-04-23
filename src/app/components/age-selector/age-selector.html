@@ -1,0 +1,36 @@
+<div class="age-split-container">
+  <div class="panel-left">
+    <div class="magic-pen-container">
+      <img src="../../images/magic_pen.png" alt="Magic Pen" class="magic-pen-img" />
+    </div>
+    <h2 class="panel-title">Pick your magic pen</h2>
+  </div>
+  
+  <div class="divider"></div>
+
+  <div class="panel-right">
+    <div class="wizard-container">
+      <img src="../../images/friendly_wizard.png" alt="Friendly Wizard" class="friendly-wizard-img" />
+    </div>
+    
+    <h2 class="panel-title wizard-title">Draw your age for me</h2>
+    <p class="subtitle">Enter a number like 6, then tap Done</p>
+
+    <div class="age-input-group">
+      <input 
+        type="number" 
+        [(ngModel)]="selectedAge" 
+        min="3" 
+        max="12" 
+        class="age-number-input"
+        placeholder="6">
+        
+      <button 
+        class="continue-btn" 
+        [disabled]="!selectedAge"
+        (click)="continue()">
+        Done
+      </button>
+    </div>
+  </div>
+</div>

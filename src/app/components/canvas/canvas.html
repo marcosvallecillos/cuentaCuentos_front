@@ -1,0 +1,44 @@
+<div class="canvas-container">
+  <div class="toolbar">
+    <div class="colors">
+      @for (color of colors; track color) {
+        <div 
+          class="color-btn"
+          [style.background]="color"
+          [class.active]="currentColor === color"
+          (click)="selectColor(color)">
+        </div>
+      }
+    </div>
+    
+    <button class="tool-btn" (click)="undo()">
+      ↶ Deshacer
+    </button>
+    
+    <button class="tool-btn" (click)="clear()">
+      🗑️ Borrar
+    </button>
+  </div>
+
+  <canvas 
+    #drawingCanvas
+    class="drawing-canvas"
+    (mousedown)="startDrawing($event)"
+    (mousemove)="draw($event)"
+    (mouseup)="stopDrawing()"
+    (mouseleave)="stopDrawing()">
+  </canvas>
+
+  <div class="submit-section">
+    <input 
+      type="text" 
+      [(ngModel)]="objectLabel" 
+      placeholder="¿Qué has dibujado?"
+      class="object-input"
+      (keyup.enter)="submitDrawing()">
+    
+    <button class="submit-btn" (click)="submitDrawing()">
+      ✨ ¡Crear Historia!
+    </button>
+  </div>
+</div>
