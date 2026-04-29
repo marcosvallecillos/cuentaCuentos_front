@@ -1,0 +1,91 @@
+<div class="admin-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>📚 Drawn Worlds</h2>
+      <p>Panel Admin</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button 
+        class="nav-btn"
+        [class.active]="activeTab === 'dashboard'"
+        (click)="setTab('dashboard')">
+        📊 Dashboard
+      </button>
+
+      <button 
+        class="nav-btn"
+        [class.active]="activeTab === 'stories'"
+        (click)="setTab('stories')">
+        📖 Historias
+      </button>
+
+      <button 
+        class="nav-btn"
+        [class.active]="activeTab === 'catalog'"
+        (click)="setTab('catalog')">
+        🎨 Catálogo
+      </button>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">
+      🚪 Cerrar Sesión
+    </button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Dashboard -->
+    <div *ngIf="activeTab === 'dashboard' && stats" class="dashboard">
+      <h1 class="page-title">📊 Dashboard</h1>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📚</div>
+          <div class="stat-info">
+            <h3>{{ stats.total_historias }}</h3>
+            <p>Historias Totales</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">✨</div>
+          <div class="stat-info">
+            <h3>{{ stats.total_interacciones }}</h3>
+            <p>Interacciones</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-info">
+            <h3>{{ stats.promedio_interacciones.toFixed(1) }}</h3>
+            <p>Promedio Int./Historia</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="recent-stories">
+        <h2>Últimas Historias</h2>
+        <div class="story-list">
+          <div *ngFor="let story of stats.ultimas_historias" class="story-item">
+            <div class="story-age-badge" [style.background]="getAgeColor(story.grupo_edad)">
+              {{ story.grupo_edad }}
+            </div>
+            <div class="story-content">
+              <p class="story-preview">{{ story.preview }}</p>
+              <small>{{ story.created_at | date:'short' }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stories Tab -->
+    <app-story-history *ngIf="activeTab === 'stories'"></app-story-history>
+
+    <!-- Catalog Tab -->
+    <app-catalog-manager *ngIf="activeTab === 'catalog'"></app-catalog-manager>
+  </main>
+</div>

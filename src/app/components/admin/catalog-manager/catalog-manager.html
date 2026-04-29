@@ -1,0 +1,107 @@
+<div class="catalog-container">
+  <div class="header">
+    <h1 class="page-title">🎨 Gestor de Catálogo</h1>
+    
+    <button class="btn-create" (click)="openCreateModal()">
+      ➕ Crear Nuevo
+    </button>
+  </div>
+
+  <div class="filters">
+    <button 
+      class="filter-btn"
+      [class.active]="filterType === ''"
+      (click)="filterType = ''; loadItems()">
+      Todos
+    </button>
+    <button 
+      class="filter-btn"
+      [class.active]="filterType === 'protagonista'"
+      (click)="filterType = 'protagonista'; loadItems()">
+      🦸 Protagonistas
+    </button>
+    <button 
+      class="filter-btn"
+      [class.active]="filterType === 'lugar'"
+      (click)="filterType = 'lugar'; loadItems()">
+      🗺️ Lugares
+    </button>
+    <button 
+      class="filter-btn"
+      [class.active]="filterType === 'emocion'"
+      (click)="filterType = 'emocion'; loadItems()">
+      😊 Emociones
+    </button>
+  </div>
+
+  <div class="items-grid">
+    <div *ngFor="let item of items" class="catalog-card" [class.inactive]="!item.activo">
+      <div class="card-header">
+        <span class="item-emoji">{{ item.emoji || '✨' }}</span>
+        <span class="item-type">{{ getTypeLabel(item.tipo) }}</span>
+      </div>
+
+      <h3 class="item-name">{{ item.nombre }}</h3>
+      <p class="item-description">{{ item.descripcion || 'Sin descripción' }}</p>
+
+      <div class="card-stats">
+        <span class="usage">Usado {{ item.veces_usado }} veces</span>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-edit" (click)="openEditModal(item)">✏️ Editar</button>
+        <button class="btn-toggle" (click)="toggleActive(item)">
+          {{ item.activo ? '🔴 Desactivar' : '🟢 Activar' }}
+        </button>
+        <button class="btn-delete-small" (click)="deleteItem(item)">🗑️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear/Editar -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingItem ? 'Editar Item' : 'Crear Nuevo Item' }}</h2>
+        <button class="close-btn" (click)="closeModal()">✖</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select [(ngModel)]="newItem.tipo" required>
+            <option value="protagonista">🦸 Protagonista</option>
+            <option value="lugar">🗺️ Lugar</option>
+            <option value="emocion">😊 Emoción</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" [(ngModel)]="newItem.nombre" placeholder="Ej: Dragón" required>
+        </div>
+
+        <div class="form-group">
+          <label>Emoji</label>
+          <input type="text" [(ngModel)]="newItem.emoji" placeholder="🐉" maxlength="2">
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="newItem.descripcion" rows="3" 
+            placeholder="Breve descripción del elemento"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Prompt para IA (opcional)</label>
+          <textarea [(ngModel)]="newItem.prompt_sugerencia" rows="3"
+            placeholder="Sugerencias especiales para que la IA use este elemento"></textarea>
+        </div>
+
+        <button class="btn-save" (click)="saveItem()">
+          {{ editingItem ? 'Actualizar' : 'Crear' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
