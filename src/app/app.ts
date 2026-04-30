@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AppState, StoryStateService } from './services/story-state.service';
 import { ApiService } from './services/api.service';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, map, startWith } from 'rxjs/operators';
+import { Router, NavigationEnd } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,7 @@ export class AppComponent implements OnInit {
   isComplete = false;
   isLoading = false;
   currentState$!: any;
+  isAdminRoute$!: Observable<boolean>;
 
   cleanText(text: string): string {
     return text
@@ -33,9 +36,15 @@ export class AppComponent implements OnInit {
 
   constructor(
     private storyState: StoryStateService,
-    private api: ApiService
+    private api: ApiService,
+    private router: Router
   ) {
     this.currentState$ = this.storyState.currentState$;
+    this.isAdminRoute$ = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map((event: any) => event.urlAfterRedirects.startsWith('/admin')),
+      startWith(window.location.pathname.startsWith('/admin'))
+    );
   }
 
   ngOnInit() {

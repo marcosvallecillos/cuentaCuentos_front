@@ -1,38 +1,42 @@
 <div class="app-container">
-  <!-- Loading overlay -->
-  @if (isLoading) {
-    <div class="loading-overlay">
-      <button class="close-loading" (click)="isLoading = false">✕</button>
-      <div class="spinner">✨</div>
-      <p class="loading-text">Creando magia...</p>
-    </div>
-  }
+  @if (isAdminRoute$ | async) {
+    <router-outlet></router-outlet>
+  } @else {
+    <!-- Loading overlay -->
+    @if (isLoading) {
+      <div class="loading-overlay">
+        <button class="close-loading" (click)="isLoading = false">✕</button>
+        <div class="spinner">✨</div>
+        <p class="loading-text">Creando magia...</p>
+      </div>
+    }
 
-  <!-- Splash Screen -->
-  @if ((currentState$ | async) === AppState.SPLASH) {
-    <app-splash></app-splash>
-  }
+    <!-- Splash Screen -->
+    @if ((currentState$ | async) === AppState.SPLASH) {
+      <app-splash></app-splash>
+    }
 
-  <!-- Age Selector -->
-  @if ((currentState$ | async) === AppState.AGE_SELECT) {
-    <app-age-selector></app-age-selector>
-  }
+    <!-- Age Selector -->
+    @if ((currentState$ | async) === AppState.AGE_SELECT) {
+      <app-age-selector></app-age-selector>
+    }
 
-  <!-- Story Setup (Characters, Places, Emotions) -->
-  @if ((currentState$ | async) === AppState.STORY_SETUP) {
-    <app-story-setup></app-story-setup>
-  }
+    <!-- Story Setup (Characters, Places, Emotions) -->
+    @if ((currentState$ | async) === AppState.STORY_SETUP) {
+      <app-story-setup></app-story-setup>
+    }
 
-  <!-- Story Viewing & Interaction -->
-  @if ((currentState$ | async) === AppState.STORY_VIEWING) {
-    <app-story-viewer 
-      [storyPages]="storyPages"
-      [needsInteraction]="needsInteraction"
-      [interactionPrompt]="interactionPrompt"
-      [opciones]="currentOptions"
-      [isComplete]="isComplete"
-      (characterSelected)="onCharacterSelected($event)"
-      (restartStory)="onRestartStory()">
-    </app-story-viewer>
+    <!-- Story Viewing & Interaction -->
+    @if ((currentState$ | async) === AppState.STORY_VIEWING) {
+      <app-story-viewer 
+        [storyPages]="storyPages"
+        [needsInteraction]="needsInteraction"
+        [interactionPrompt]="interactionPrompt"
+        [opciones]="currentOptions"
+        [isComplete]="isComplete"
+        (characterSelected)="onCharacterSelected($event)"
+        (restartStory)="onRestartStory()">
+      </app-story-viewer>
+    }
   }
 </div>

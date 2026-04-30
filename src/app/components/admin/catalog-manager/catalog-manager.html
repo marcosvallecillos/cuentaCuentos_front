@@ -35,7 +35,8 @@
   </div>
 
   <div class="items-grid">
-    <div *ngFor="let item of items" class="catalog-card" [class.inactive]="!item.activo">
+    @for (item of items; track item.id || $index) {
+    <div class="catalog-card" [class.inactive]="!item.activo">
       <div class="card-header">
         <span class="item-emoji">{{ item.emoji || '✨' }}</span>
         <span class="item-type">{{ getTypeLabel(item.tipo) }}</span>
@@ -56,10 +57,12 @@
         <button class="btn-delete-small" (click)="deleteItem(item)">🗑️</button>
       </div>
     </div>
+    }
   </div>
 
   <!-- Modal Crear/Editar -->
-  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  @if (showModal) {
+  <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>{{ editingItem ? 'Editar Item' : 'Crear Nuevo Item' }}</h2>
@@ -104,4 +107,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

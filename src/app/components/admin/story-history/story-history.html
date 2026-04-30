@@ -12,7 +12,8 @@
     </div>
   </div>
 
-  <div class="stories-table" *ngIf="!loading">
+  @if (!loading) {
+  <div class="stories-table">
     <table>
       <thead>
         <tr>
@@ -25,7 +26,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let story of stories">
+        @for (story of stories; track story.id) {
+        <tr>
           <td>{{ story.id }}</td>
           <td>
             <span class="age-badge" [style.background]="getAgeColor(story.grupo_edad)">
@@ -40,16 +42,21 @@
             <button class="btn-delete" (click)="deleteStory(story)">🗑️</button>
           </td>
         </tr>
+        }
       </tbody>
     </table>
   </div>
+  }
 
-  <div class="loading" *ngIf="loading">
+  @if (loading) {
+  <div class="loading">
     <p>Cargando historias...</p>
   </div>
+  }
 
   <!-- Modal para ver historia completa -->
-  <div class="modal-overlay" *ngIf="selectedStory" (click)="closeModal()">
+  @if (selectedStory) {
+  <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>Historia #{{ selectedStory.id }}</h2>
@@ -68,17 +75,22 @@
           {{ selectedStory.texto_completo }}
         </div>
 
-        <div class="interactions-section" *ngIf="selectedStory.interacciones">
+        @if (selectedStory.interacciones) {
+        <div class="interactions-section">
           <h3>Interacciones ({{ selectedStory.interacciones.length }})</h3>
-          <div class="interaction-item" *ngFor="let int of selectedStory.interacciones">
+          @for (int of selectedStory.interacciones; track $index) {
+          <div class="interaction-item">
             <span class="interaction-badge">{{ int.orden + 1 }}</span>
             <div class="interaction-content">
               <strong>Dibujó:</strong> {{ int.objeto_dibujado }}
               <p>{{ int.texto_generado }}</p>
             </div>
           </div>
+          }
         </div>
+        }
       </div>
     </div>
   </div>
+  }
 </div>

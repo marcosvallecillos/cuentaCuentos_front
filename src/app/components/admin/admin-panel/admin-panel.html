@@ -37,7 +37,8 @@
   <!-- Main Content -->
   <main class="main-content">
     <!-- Dashboard -->
-    <div *ngIf="activeTab === 'dashboard' && stats" class="dashboard">
+    @if (activeTab === 'dashboard' && stats) {
+    <div class="dashboard">
       <h1 class="page-title">📊 Dashboard</h1>
 
       <div class="stats-grid">
@@ -69,7 +70,8 @@
       <div class="recent-stories">
         <h2>Últimas Historias</h2>
         <div class="story-list">
-          <div *ngFor="let story of stats.ultimas_historias" class="story-item">
+          @for (story of stats.ultimas_historias; track $index) {
+          <div class="story-item">
             <div class="story-age-badge" [style.background]="getAgeColor(story.grupo_edad)">
               {{ story.grupo_edad }}
             </div>
@@ -78,14 +80,20 @@
               <small>{{ story.created_at | date:'short' }}</small>
             </div>
           </div>
+          }
         </div>
       </div>
     </div>
+    }
 
     <!-- Stories Tab -->
-    <app-story-history *ngIf="activeTab === 'stories'"></app-story-history>
+    @if (activeTab === 'stories') {
+    <app-story-history></app-story-history>
+    }
 
     <!-- Catalog Tab -->
-    <app-catalog-manager *ngIf="activeTab === 'catalog'"></app-catalog-manager>
+    @if (activeTab === 'catalog') {
+    <app-catalog-manager></app-catalog-manager>
+    }
   </main>
 </div>

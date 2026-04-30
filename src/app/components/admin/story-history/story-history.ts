@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AdminService, Story } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-story-history',
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './story-history.html',
   styleUrl: './story-history.scss',
 })

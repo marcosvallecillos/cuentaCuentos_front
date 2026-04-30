@@ -26,9 +26,11 @@
           required>
       </div>
 
-      <div class="error-message" *ngIf="error">
+      @if (error) {
+      <div class="error-message">
         {{ error }}
       </div>
+      }
 
       <button type="submit" class="login-btn" [disabled]="loading">
         {{ loading ? 'Ingresando...' : 'Ingresar' }}

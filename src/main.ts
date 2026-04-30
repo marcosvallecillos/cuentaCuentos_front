@@ -3,6 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { routes } from './app/app.routes';
 import { AppComponent } from './app/app';
 import { SplashComponent } from './app/components/splash/splash';
 import { AgeSelectorComponent } from './app/components/age-selector/age-selector';
@@ -27,6 +29,7 @@ import { CatalogManager } from './app/components/admin/catalog-manager/catalog-m
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    RouterModule.forRoot(routes),
     AdminLogin,
     AdminPanel,
     StoryHistory,
