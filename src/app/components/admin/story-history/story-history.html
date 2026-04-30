@@ -1,0 +1,84 @@
+<div class="story-history-container">
+  <div class="header">
+    <h1 class="page-title">📖 Historial de Historias</h1>
+    
+    <div class="filters">
+      <select [(ngModel)]="filterGroup" (change)="loadStories()" class="filter-select">
+        <option value="">Todos los grupos</option>
+        <option value="3-5">3-5 años</option>
+        <option value="6-8">6-8 años</option>
+        <option value="9-12">9-12 años</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stories-table" *ngIf="!loading">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grupo Edad</th>
+          <th>Vista Previa</th>
+          <th>Interacciones</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let story of stories">
+          <td>{{ story.id }}</td>
+          <td>
+            <span class="age-badge" [style.background]="getAgeColor(story.grupo_edad)">
+              {{ story.grupo_edad }}
+            </span>
+          </td>
+          <td class="preview-cell">{{ story.preview }}</td>
+          <td class="center">{{ story.num_interacciones }}</td>
+          <td>{{ story.created_at | date:'short' }}</td>
+          <td class="actions">
+            <button class="btn-view" (click)="viewStory(story)">👁️ Ver</button>
+            <button class="btn-delete" (click)="deleteStory(story)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Cargando historias...</p>
+  </div>
+
+  <!-- Modal para ver historia completa -->
+  <div class="modal-overlay" *ngIf="selectedStory" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Historia #{{ selectedStory.id }}</h2>
+        <button class="close-btn" (click)="closeModal()">✖</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="story-meta">
+          <span class="age-badge" [style.background]="getAgeColor(selectedStory.grupo_edad)">
+            {{ selectedStory.grupo_edad }}
+          </span>
+          <span class="date">{{ selectedStory.created_at | date:'medium' }}</span>
+        </div>
+
+        <div class="story-full-text">
+          {{ selectedStory.texto_completo }}
+        </div>
+
+        <div class="interactions-section" *ngIf="selectedStory.interacciones">
+          <h3>Interacciones ({{ selectedStory.interacciones.length }})</h3>
+          <div class="interaction-item" *ngFor="let int of selectedStory.interacciones">
+            <span class="interaction-badge">{{ int.orden + 1 }}</span>
+            <div class="interaction-content">
+              <strong>Dibujó:</strong> {{ int.objeto_dibujado }}
+              <p>{{ int.texto_generado }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
