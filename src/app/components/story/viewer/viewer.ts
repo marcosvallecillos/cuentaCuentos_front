@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-story-viewer',
@@ -7,7 +7,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
   styleUrls: ['./viewer.scss']
 })
 export class StoryViewerComponent implements OnInit {
-  @Input() storyText = '';
+  @Input() storyPages: string[] = [];
   @Input() needsInteraction = false;
   @Input() interactionPrompt = '';
   @Input() opciones: string[] = [];
@@ -15,25 +15,46 @@ export class StoryViewerComponent implements OnInit {
   @Output() characterSelected = new EventEmitter<string>();
   @Output() restartStory = new EventEmitter<void>();
 
-  interactionOptions = [
-    { name: 'Ir por el camino de flores', icon: '🌸' },
-    { name: 'Hablar con el búho sabio', icon: '🦉' }
-  ];
-
+  currentPageIndex = 0;
   isNarrating = false;
   private utterance: SpeechSynthesisUtterance | null = null;
 
   ngOnInit() {
-    console.log('StoryViewer cargado con texto:', this.storyText.substring(0, 50) + '...');
-    // Auto-narrar al cargar
+    this.currentPageIndex = this.storyPages.length - 1;
     setTimeout(() => this.narrate(), 500);
+  }
+
+  ngOnChanges() {
+    // Si se añade una nueva página, vamos a ella y narramos
+    if (this.storyPages.length > this.currentPageIndex + 1) {
+      this.currentPageIndex = this.storyPages.length - 1;
+      this.narrate();
+    }
+  }
+
+  get currentStoryPage(): string {
+    return this.storyPages[this.currentPageIndex] || '';
+  }
+
+  nextPage() {
+    if (this.currentPageIndex < this.storyPages.length - 1) {
+      this.currentPageIndex++;
+      this.narrate();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPageIndex > 0) {
+      this.currentPageIndex--;
+      this.narrate();
+    }
   }
 
   narrate() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       
-      this.utterance = new SpeechSynthesisUtterance(this.storyText);
+      this.utterance = new SpeechSynthesisUtterance(this.currentStoryPage);
       this.utterance.lang = 'es-ES';
       this.utterance.rate = 0.9;
       this.utterance.pitch = 1.1;
@@ -44,7 +65,8 @@ export class StoryViewerComponent implements OnInit {
       
       this.utterance.onend = () => {
         this.isNarrating = false;
-        if (this.needsInteraction) {
+        // Solo narramos el prompt si estamos en la última página y se necesita interacción
+        if (this.needsInteraction && this.currentPageIndex === this.storyPages.length - 1) {
           this.narratePrompt();
         }
       };

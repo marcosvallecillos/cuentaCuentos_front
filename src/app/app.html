@@ -26,7 +26,7 @@
   <!-- Story Viewing & Interaction -->
   @if ((currentState$ | async) === AppState.STORY_VIEWING) {
     <app-story-viewer 
-      [storyText]="currentStoryText"
+      [storyPages]="storyPages"
       [needsInteraction]="needsInteraction"
       [interactionPrompt]="interactionPrompt"
       [opciones]="currentOptions"

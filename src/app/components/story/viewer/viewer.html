@@ -1,73 +1,48 @@
 <div class="story-viewer-container">
   <div class="story-book">
+    <div class="book-header">
+      <span class="page-indicator">Página {{ currentPageIndex + 1 }} de {{ storyPages.length }}</span>
+      <div class="book-controls">
+        <button class="nav-btn" [disabled]="currentPageIndex === 0" (click)="prevPage()">⬅️ Anterior</button>
+        <button class="nav-btn" [disabled]="currentPageIndex === storyPages.length - 1" (click)="nextPage()">Siguiente ➡️</button>
+      </div>
+    </div>
+
     <div class="book-page">
-      <h2 class="story-title">📖 Tu Historia Mágica</h2>
-      
       <div class="story-content">
-        @if (storyText) {
-          <p class="story-text" [class.narrating]="isNarrating">
-            {{ storyText }}
-          </p>
-        } @else {
-          <p class="story-text loading-placeholder">Esperando a que la magia se escriba...</p>
-        }
+        <p class="story-text" [class.narrating]="isNarrating">
+          {{ currentStoryPage }}
+        </p>
       </div>
-
-      <div class="audio-controls">
-        <button 
-          class="audio-btn" 
-          (click)="narrate()"
-          [disabled]="isNarrating">
-          {{ isNarrating ? '🔊 Narrando...' : '🔊 Escuchar otra vez' }}
-        </button>
-        
-        @if (isNarrating) {
-          <button 
-            class="audio-btn stop-btn" 
-            (click)="stopNarration()">
-            ⏹️ Detener
-          </button>
-        }
+      
+      <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()">
+        {{ isNarrating ? '🔊 Escuchando...' : '🔈 Escuchar otra vez' }}
       </div>
+    </div>
 
-      <!-- Interacción -->
-      @if (needsInteraction) {
-        <div class="interaction-section">
-          <div class="interaction-prompt">
-            <p class="prompt-text">{{ interactionPrompt }}</p>
-            <div class="choices-container">
-              @if (opciones && opciones.length >= 2) {
-                <div class="choice-card large" (click)="onSelectCharacter(opciones[0])">
-                  <span class="choice-icon">✨</span>
-                  <span class="choice-name">{{ opciones[0] }}</span>
-                </div>
-                <div class="choice-card large" (click)="onSelectCharacter(opciones[1])">
-                  <span class="choice-icon">🔮</span>
-                  <span class="choice-name">{{ opciones[1] }}</span>
-                </div>
-              } @else {
-                @for (opt of interactionOptions; track opt.name) {
-                  <div class="choice-card large" (click)="onSelectCharacter(opt.name)">
-                    <span class="choice-icon">{{ opt.icon }}</span>
-                    <span class="choice-name">{{ opt.name }}</span>
-                  </div>
-                }
+    <!-- Secciones de Interacción y Final (Solo en la última página) -->
+    @if (currentPageIndex === storyPages.length - 1) {
+      <div class="footer-actions">
+        @if (needsInteraction && !isComplete) {
+          <div class="interaction-section">
+            <h3 class="interaction-prompt">{{ interactionPrompt }}</h3>
+            <div class="options-grid">
+              @for (opcion of opciones; track opcion) {
+                <button class="option-card" (click)="onSelectCharacter(opcion)">
+                  <span class="option-text">{{ opcion }}</span>
+                </button>
               }
             </div>
           </div>
-        </div>
-      }
+        }
 
-
-      <!-- Final -->
-      @if (isComplete) {
-        <div class="complete-section">
-          <h3 class="complete-title">🎉 ¡Historia Completa! 🎉</h3>
-          <button class="restart-btn" (click)="onRestart()">
-            🔄 Crear Nueva Historia
-          </button>
-        </div>
-      }
-    </div>
+        @if (isComplete) {
+          <div class="completion-section">
+            <h3 class="completion-title">✨ ¡El cuento ha terminado! ✨</h3>
+            <button class="restart-btn" (click)="onRestart()">🎒 Crear otra aventura</button>
+          </div>
+        }
+      </div>
+    }
   </div>
 </div>

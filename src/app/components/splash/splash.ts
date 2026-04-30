@@ -58,8 +58,14 @@ export class SplashComponent implements OnInit, OnDestroy {
     this.animationFrame = requestAnimationFrame(() => this.animate());
   }
 
+  isNavigating = false;
+
   startApp() {
-    this.storyState.setState(AppState.AGE_SELECT);
+    if (this.isNavigating) return;
+    this.isNavigating = true;
+    setTimeout(() => {
+      this.storyState.setState(AppState.AGE_SELECT);
+    }, 1500);
   }
 }
 

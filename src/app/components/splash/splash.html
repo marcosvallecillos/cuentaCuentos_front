@@ -1,4 +1,4 @@
-<div class="splash-container" (click)="startApp()" (mousemove)="onMouseMove($event)">
+<div class="splash-container" [class.navigating]="isNavigating" (click)="startApp()" (mousemove)="onMouseMove($event)">
   <div class="stars-overlay"></div>
   <div class="twinkle-stars"></div>
   
@@ -20,7 +20,7 @@
     <div class="book-container">
       <div class="magic-hover-wrapper">
         <div class="book-glow"></div>
-        <img src="images/magic_book1.png" alt="Drawn Worlds" class="magic-book-img" />
+        <img src="images/magic_book.png" alt="Drawn Worlds" class="magic-book-img" />
         <div class="particles-container">
           <div class="particle" style="--d: 1s; --x: 100px; --y: -100px;"></div>
           <div class="particle" style="--d: 1.5s; --x: -120px; --y: 80px;"></div>

@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   AppState = AppState;
 
   // Story data
-  currentStoryText = '';
+  storyPages: string[] = [];
   needsInteraction = false;
   interactionPrompt = '';
   currentOptions: string[] = [];
@@ -23,11 +23,11 @@ export class AppComponent implements OnInit {
 
   cleanText(text: string): string {
     return text
+      .split('[PAUSA_INTERACCION]')[0]
+      .split('[FIN]')[0]
       .replace(/\[Inicio de la historia\]/g, '')
-      .replace(/\[PAUSA_INTERACCION\]/g, '')
-      .replace(/\[OPCIONES\]/g, '')
-      .replace(/\[FIN\]/g, '')
-      .replace(/\[FINAL\]/g, '')
+      .replace(/\[Continuación del cuento\]/g, '')
+      .replace(/\[Final del cuento\]/g, '')
       .trim();
   }
 
@@ -41,9 +41,8 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.storyState.reset();
 
-    // Listen for transitions to STORY_VIEWING to trigger the initial story generation
     this.storyState.currentState$.pipe(
-      filter(state => state === AppState.STORY_VIEWING && this.currentStoryText === ''),
+      filter(state => state === AppState.STORY_VIEWING && this.storyPages.length === 0),
       take(1)
     ).subscribe(() => {
       this.generateInitialStory();
@@ -59,68 +58,47 @@ export class AppComponent implements OnInit {
 
     this.api.generarHistoria(character, place, emotion, userAge).subscribe({
       next: (response) => {
-        console.log('--- API generacion historia exitosa ---');
-        console.log('Response:', response);
-        
-        // Forzamos el fin de la carga en el siguiente ciclo de detección
-        setTimeout(() => {
-          this.isLoading = false;
-          console.log('isLoading set to false');
-        }, 100);
-
-        this.currentStoryText = response.historia;
+        this.isLoading = false;
+        const pageText = this.cleanText(response.historia);
+        this.storyPages = [pageText];
         this.needsInteraction = response.necesita_interaccion;
         this.interactionPrompt = response.prompt_interaccion || '';
         this.currentOptions = response.opciones || [];
         this.isComplete = response.progreso.completado;
         
-        this.storyState.appendToStory(response.historia);
+        this.storyState.appendToStory(pageText);
       },
       error: (error) => {
-        console.error('Error:', error);
-        alert('Error al generar la historia. Intenta de nuevo.');
         this.isLoading = false;
         this.storyState.setState(AppState.STORY_SETUP);
       }
     });
   }
 
-  // When the story pauses and the child needs to pick a new character
-  onReadyForNextChoice() {
-    // This will be handled inside StoryViewer component for selection
-    // For now we just stay in STORY_VIEWING but show a selection UI
-  }
-
-  // Called from StoryViewer when a new character is selected during interaction
   onCharacterSelected(newCharacter: string) {
     const userAge = this.storyState.getUserAge();
-    const { character } = this.storyState.getSetupData(); // Character is irrelevant here but good context
     if (!userAge) return;
 
     this.isLoading = true;
     this.storyState.incrementInteraction();
     const interactionNum = this.storyState.getInteractionCount();
+    
+    // Concatenamos toda la historia para dar contexto al backend
+    const fullContext = this.storyPages.join('\n\n');
 
-    this.api.continuarHistoria(this.currentStoryText, newCharacter, userAge, interactionNum).subscribe({
+    this.api.continuarHistoria(fullContext, newCharacter, userAge, interactionNum).subscribe({
       next: (response) => {
-        console.log('--- API continuacion historia exitosa ---');
-        console.log('Response:', response);
-        
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 100);
-
-        this.currentStoryText = response.historia;
+        this.isLoading = false;
+        const pageText = this.cleanText(response.historia);
+        this.storyPages.push(pageText);
         this.needsInteraction = response.necesita_interaccion;
         this.interactionPrompt = response.prompt_interaccion || '';
         this.currentOptions = response.opciones || [];
         this.isComplete = response.progreso.completado;
         
-        this.storyState.appendToStory(response.historia);
+        this.storyState.appendToStory(pageText);
       },
       error: (error) => {
-        console.error('Error:', error);
-        alert('Error al continuar la historia.');
         this.isLoading = false;
       }
     });
@@ -128,7 +106,7 @@ export class AppComponent implements OnInit {
 
   onRestartStory() {
     this.storyState.reset();
-    this.currentStoryText = '';
+    this.storyPages = [];
     this.needsInteraction = false;
     this.interactionPrompt = '';
     this.isComplete = false;
