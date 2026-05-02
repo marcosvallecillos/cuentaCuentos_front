@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService, Story } from '../../../services/admin.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-story-history',
@@ -15,24 +16,37 @@ export class StoryHistory {
   filterGroup: string = '';
   loading = false;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadStories();
+    this.cdr.detectChanges();
   }
 
   loadStories() {
     this.loading = true;
-    this.adminService.getStories(0, 100, this.filterGroup || undefined).subscribe({
-      next: (data) => {
-        this.stories = data;
+    this.cdr.detectChanges();
+    console.log('Cargando historias del historial...');
+    this.adminService.getStories(0, 100, this.filterGroup || undefined)
+      .pipe(finalize(() => {
+        console.log('Finalizado carga de historias');
         this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error loading stories:', err);
-        this.loading = false;
-      }
-    });
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (data) => {
+          console.log('Historias cargadas:', data.length);
+          this.stories = data;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error loading stories:', err);
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   viewStory(story: Story) {

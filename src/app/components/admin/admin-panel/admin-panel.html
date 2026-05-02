@@ -37,9 +37,17 @@
   <!-- Main Content -->
   <main class="main-content">
     <!-- Dashboard -->
-    @if (activeTab === 'dashboard' && stats) {
-    <div class="dashboard">
-      <h1 class="page-title">📊 Dashboard</h1>
+    @if (activeTab === 'dashboard') {
+      <div class="dashboard">
+        <h1 class="page-title">📊 Dashboard</h1>
+
+        @if (isLoading && !stats) {
+          <div class="loading-stats">
+            <p>Cargando estadísticas...</p>
+          </div>
+        }
+
+        @if (stats) {
 
       <div class="stats-grid">
         <div class="stat-card">
@@ -81,8 +89,9 @@
             </div>
           </div>
           }
+          </div>
         </div>
-      </div>
+      }
     </div>
     }
 

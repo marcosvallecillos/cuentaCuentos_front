@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { AdminService, CatalogItem } from '../../../services/admin.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-catalog-manager',
@@ -11,8 +12,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class CatalogManager {
 
- items: CatalogItem[] = [];
+  items: CatalogItem[] = [];
   filterType: '' | 'protagonista' | 'lugar' | 'emocion' = '';
+  loading = false;
   
   showModal = false;
   editingItem: CatalogItem | null = null;
@@ -25,19 +27,37 @@ export class CatalogManager {
     prompt_sugerencia: ''
   };
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadItems();
+    this.cdr.detectChanges();
   }
 
   loadItems() {
-    this.adminService.getCatalogItems(this.filterType || undefined).subscribe({
-      next: (data) => {
-        this.items = data;
-      },
-      error: (err) => console.error('Error loading catalog:', err)
-    });
+    this.loading = true;
+    this.cdr.detectChanges();
+    console.log('Cargando catálogo...');
+    this.adminService.getCatalogItems(this.filterType || undefined)
+      .pipe(finalize(() => {
+        console.log('Finalizado carga de catálogo');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (data) => {
+          console.log('Catálogo cargado:', data.length);
+          this.items = data;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error loading catalog:', err);
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   openCreateModal() {

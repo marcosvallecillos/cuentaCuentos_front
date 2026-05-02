@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService, StoryStats } from '../../../services/admin.service';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { StoryHistory } from '../story-history/story-history';
 import { CatalogManager } from '../catalog-manager/catalog-manager';
 
@@ -13,12 +14,14 @@ import { CatalogManager } from '../catalog-manager/catalog-manager';
 })
 export class AdminPanel {
 
- stats: StoryStats | null = null;
+  stats: StoryStats | null = null;
   activeTab: 'dashboard' | 'stories' | 'catalog' = 'dashboard';
+  isLoading = false;
 
   constructor(
     private adminService: AdminService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -28,21 +31,36 @@ export class AdminPanel {
     }
 
     this.loadStats();
+    this.cdr.detectChanges();
   }
 
   loadStats() {
-    this.adminService.getStats().subscribe({
-      next: (data) => {
-        this.stats = data;
-      },
-      error: (err) => {
-        console.error('Error loading stats:', err);
-      }
-    });
+    this.isLoading = true;
+    this.cdr.detectChanges();
+    console.log('Cargando estadísticas del dashboard...');
+    this.adminService.getStats()
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (data) => {
+          console.log('Estadísticas cargadas:', data);
+          this.stats = data;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error loading stats:', err);
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   setTab(tab: 'dashboard' | 'stories' | 'catalog') {
     this.activeTab = tab;
+    if (tab === 'dashboard') {
+      this.loadStats();
+    }
   }
 
   logout() {
