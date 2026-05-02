@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
 
   cleanText(text: string): string {
     return text
+      .split('[OPCIONES]')[0]
       .split('[PAUSA_INTERACCION]')[0]
       .split('[FIN]')[0]
       .replace(/\[Inicio de la historia\]/g, '')

@@ -7,15 +7,13 @@ import { StoryResponse } from '../models/story.model';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'http://127.0.0.1:8000/api';
 
   constructor(private http: HttpClient) {}
 
   generarHistoria(personaje: string, lugar: string, emocion: string, edad: number): Observable<StoryResponse> {
     return this.http.post<StoryResponse>(`${this.apiUrl}/generar-historia`, {
-      personaje,
-      lugar,
-      emocion,
+      objeto: `${personaje}, en ${lugar}, sintiendo ${emocion}`,
       edad
     });
   }
