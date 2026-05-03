@@ -7,7 +7,7 @@
 
     @if (currentStep === 1) {
       <div class="step-content">
-        <h2 class="step-title">¿Quién será el protagonista?</h2>
+        <h2 class="step-title">{{getText('¿Quién será el protagonista?', 'Who will be the main character?')}}</h2>
         <div class="options-grid">
           @for (char of characters; track char.id) {
             <div class="option-card" [class.selected]="selectedCharacter === char.name" (click)="selectedCharacter = char.name">
@@ -21,7 +21,7 @@
 
     @if (currentStep === 2) {
       <div class="step-content">
-        <h2 class="step-title">¿Dónde sucede la aventura?</h2>
+        <h2 class="step-title">{{getText('¿Dónde sucede la aventura?', 'Where does the adventure take place?')}}</h2>
         <div class="options-grid">
           @for (p of places; track p.id) {
             <div class="option-card" [class.selected]="selectedPlace === p.name" (click)="selectedPlace = p.name">
@@ -35,7 +35,7 @@
 
     @if (currentStep === 3) {
       <div class="step-content">
-        <h2 class="step-title">¿Cómo se siente hoy?</h2>
+        <h2 class="step-title">{{getText('¿Cómo se siente hoy?', 'How does he/she feel today?')}}</h2>
         <div class="options-grid">
           @for (e of emotions; track e.id) {
             <div class="option-card" [class.selected]="selectedEmotion === e.name" (click)="selectedEmotion = e.name">
@@ -49,11 +49,11 @@
 
     <div class="navigation-btns">
       @if (currentStep > 1) {
-        <button class="nav-btn secondary" (click)="prevStep()">Atrás</button>
+        <button class="nav-btn secondary" (click)="prevStep()" >{{getText('Atrás', 'Back')}}</button>
       }
       
       @if (currentStep < 3) {
-        <button class="nav-btn primary" [disabled]="!canContinue()" (click)="nextStep()">Siguiente</button>
+        <button class="nav-btn primary" [disabled]="!canContinue()" (click)="nextStep()">{{getText('Siguiente', 'Next')}}</button>
       } @else {
         <button class="nav-btn magic" [disabled]="!canContinue()" (click)="finishSetup()">✨ ¡Crear Historia!</button>
       }
@@ -65,13 +65,13 @@
     <div class="book-preview">
       <div class="page-content">
         <div class="preview-stars">✨</div>
-        <h3 class="preview-title">Tu Nuevo Cuento</h3>
+        <h3 class="preview-title">{{getText('Tu Nuevo Cuento', 'Your New Story')}}</h3>
         <ul class="preview-summary">
-          <li><strong>Protagonista:</strong> {{ selectedCharacter || '???' }}</li>
-          <li><strong>Lugar:</strong> {{ selectedPlace || '???' }}</li>
-          <li><strong>Emoción:</strong> {{ selectedEmotion || '???' }}</li>
+          <li><strong>{{getText('Protagonista', 'Main Character')}}:</strong> {{ selectedCharacter || '???' }}</li>
+          <li><strong>{{getText('Lugar', 'Place')}}:</strong> {{ selectedPlace || '???' }}</li>
+          <li><strong>{{getText('Emoción', 'Emotion')}}:</strong> {{ selectedEmotion || '???' }}</li>
         </ul>
-        <p class="preview-hint">¡Elige todas las opciones para empezar la magia!</p>
+        <p class="preview-hint">{{getText('¡Elige todas las opciones para empezar la magia!', '¡Choose all the options to start the magic!')}}</p>
       </div>
     </div>
   </div>

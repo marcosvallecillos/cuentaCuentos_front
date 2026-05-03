@@ -12,11 +12,11 @@
     </div>
     
     <button class="tool-btn" (click)="undo()">
-      ↶ Deshacer
+      {{getText('↶ Deshacer', '↶ Undo')}}
     </button>
     
     <button class="tool-btn" (click)="clear()">
-      🗑️ Borrar
+      {{getText('🗑️ Borrar', '🗑️ Clear')}}
     </button>
   </div>
 
@@ -33,12 +33,12 @@
     <input 
       type="text" 
       [(ngModel)]="objectLabel" 
-      placeholder="¿Qué has dibujado?"
+      placeholder="{{getText('¿Qué has dibujado?', 'What did you draw?')}}"
       class="object-input"
       (keyup.enter)="submitDrawing()">
     
     <button class="submit-btn" (click)="submitDrawing()">
-      ✨ ¡Crear Historia!
+      {{getText('✨ ¡Crear Historia!', '✨ Create Story!')}}
     </button>
   </div>
 </div>

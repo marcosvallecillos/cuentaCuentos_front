@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { StoryStateService, AppState } from '../../services/story-state.service';
+import { LanguageService } from '../../services/language.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-age-selector',
@@ -15,12 +17,19 @@ export class AgeSelectorComponent {
     { range: '9-12', label: 'Soñadores', color: '#98FB98' }
   ];
 
-  constructor(private storyState: StoryStateService) {}
+  isSpanish = true;
+  private langSub: Subscription | null = null;
+  constructor(private storyState: StoryStateService,    private languageService: LanguageService
+  ) { this.languageService.isSpanish$.subscribe(
+      isSpanish => this.isSpanish = isSpanish
+    );}
 
   selectAge(age: number) {
     this.selectedAge = age;
   }
-
+getText(es: string, en: string): string {
+      return this.isSpanish ? es : en;
+    }
   continue() {
     if (this.selectedAge) {
       this.storyState.setUserAge(this.selectedAge);

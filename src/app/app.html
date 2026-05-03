@@ -2,12 +2,27 @@
   @if (isAdminRoute$ | async) {
     <router-outlet></router-outlet>
   } @else {
+    <!-- Header controls -->
+    @if ((currentState$ | async) !== AppState.SPLASH && (currentState$ | async) !== AppState.AGE_SELECT) {
+      <div class="app-header">
+        @if (selectedAgeRange) {
+          <div class="age-badge">
+            <span class="badge-icon">🎂</span>
+            <span class="badge-text">{{ selectedAgeRange }} {{ isSpanish ? 'años' : 'years' }}</span>
+          </div>
+        }
+        <button class="mute-btn" (click)="toggleMute()" [title]="isMuted ? (isSpanish ? 'Activar sonido' : 'Unmute') : (isSpanish ? 'Silenciar' : 'Mute')">
+          {{ isMuted ? '🔇' : '🔊' }}
+        </button>
+      </div>
+    }
+
     <!-- Loading overlay -->
     @if (isLoading) {
       <div class="loading-overlay">
         <button class="close-loading" (click)="isLoading = false">✕</button>
         <div class="spinner">✨</div>
-        <p class="loading-text">Creando magia...</p>
+        <p class="loading-text">{{ isSpanish ? 'Creando magia...' : 'Creating magic...' }}</p>
       </div>
     }
 

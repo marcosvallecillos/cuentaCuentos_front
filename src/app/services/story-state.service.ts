@@ -20,6 +20,7 @@ export class StoryStateService {
   private emotionSubject = new BehaviorSubject<string>('');
   private fullStorySubject = new BehaviorSubject<string>('');
   private interactionCountSubject = new BehaviorSubject<number>(0);
+  private isMutedSubject = new BehaviorSubject<boolean>(false);
 
   currentState$ = this.currentStateSubject.asObservable();
   userAge$ = this.userAgeSubject.asObservable();
@@ -28,6 +29,7 @@ export class StoryStateService {
   emotion$ = this.emotionSubject.asObservable();
   fullStory$ = this.fullStorySubject.asObservable();
   interactionCount$ = this.interactionCountSubject.asObservable();
+  isMuted$ = this.isMutedSubject.asObservable();
 
   setState(state: AppState) {
     this.currentStateSubject.next(state);
@@ -81,4 +83,12 @@ export class StoryStateService {
     this.fullStorySubject.next('');
     this.interactionCountSubject.next(0);
   }
-}
+
+  toggleMute() {
+    this.isMutedSubject.next(!this.isMutedSubject.value);
+  }
+
+  getIsMuted(): boolean {
+    return this.isMutedSubject.value;
+  }
+}

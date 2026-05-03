@@ -7,8 +7,8 @@
   </div>
 
   <div class="content-wrap">
-    <h2 class="panel-title wizard-title">What is your magical age?</h2>
-    <p class="subtitle">Enter a number like 6, then tap Done to begin</p>
+    <h2 class="panel-title wizard-title">{{getText('¿Qué edad tienes?', 'What is your magical age?')}}</h2>
+    <p class="subtitle">{{getText('Introduce un número como 6, luego pulsa Enter para comenzar', 'Enter a number like 6, then tap Done to begin')}}</p>
 
     <div class="age-input-group">
       <input 
@@ -23,7 +23,7 @@
         class="continue-btn" 
         [disabled]="!selectedAge"
         (click)="continue()">
-        Enter Dream World
+        {{getText('Entrar al mundo de los sueños', 'Enter Dream World')}}
       </button>
     </div>
   </div>

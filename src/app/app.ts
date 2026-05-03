@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AppState, StoryStateService } from './services/story-state.service';
 import { ApiService } from './services/api.service';
-import { filter, take, map, startWith, finalize } from 'rxjs/operators';
+import { LanguageService } from './services/language.service';
+import { filter, take, map, startWith, finalize, timeout, catchError } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,11 @@ export class AppComponent implements OnInit {
   isLoading = false;
   currentState$!: any;
   isAdminRoute$!: Observable<boolean>;
+  
+  // User settings
+  isSpanish = true;
+  isMuted = false;
+  selectedAgeRange = '';
 
   cleanText(text: string): string {
     if (!text) return '';
@@ -53,7 +59,8 @@ export class AppComponent implements OnInit {
   constructor(
     private storyState: StoryStateService,
     private api: ApiService,
-    private router: Router
+    private router: Router,
+    private languageService: LanguageService
   ) {
     this.currentState$ = this.storyState.currentState$;
     this.isAdminRoute$ = this.router.events.pipe(
@@ -66,6 +73,21 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.storyState.reset();
 
+    this.languageService.isSpanish$.subscribe(isSp => this.isSpanish = isSp);
+    this.storyState.isMuted$.subscribe(muted => this.isMuted = muted);
+    
+    this.storyState.userAge$.subscribe(age => {
+      if (!age) {
+        this.selectedAgeRange = '';
+      } else if (age <= 5) {
+        this.selectedAgeRange = '3-5';
+      } else if (age <= 8) {
+        this.selectedAgeRange = '6-8';
+      } else {
+        this.selectedAgeRange = '9-12';
+      }
+    });
+
     this.storyState.currentState$.pipe(
       filter(state => state === AppState.STORY_VIEWING && this.storyPages.length === 0),
       take(1)
@@ -74,22 +96,44 @@ export class AppComponent implements OnInit {
     });
   }
 
+  toggleMute() {
+    this.storyState.toggleMute();
+  }
+
   generateInitialStory() {
     const userAge = this.storyState.getUserAge();
     const { character, place, emotion } = this.storyState.getSetupData();
-    if (!userAge || !character) return;
+    if (!userAge || !character) {
+      console.warn('Faltan datos para generar historia:', { userAge, character });
+      return;
+    }
 
-    console.log('Generando historia inicial...');
+    console.log('🚀 Iniciando generarHistoria...', { character, place, emotion, userAge });
     this.isLoading = true;
 
     this.api.generarHistoria(character, place, emotion, userAge)
-      .pipe(finalize(() => {
-        console.log('Finalizado generarHistoria');
-        this.isLoading = false;
-      }))
+      .pipe(
+        timeout(35000), // 35 segundos de timeout
+        finalize(() => {
+          console.log('🏁 Finalizado flujo generarHistoria');
+          this.isLoading = false;
+        }),
+        catchError(err => {
+          console.error('❌ Error capturado en generarHistoria:', err);
+          this.storyState.setState(AppState.STORY_SETUP);
+          return of(null);
+        })
+      )
       .subscribe({
         next: (response) => {
+          if (!response) return;
+          console.log('✅ Respuesta recibida de generarHistoria:', response);
+          
           const pageText = this.cleanText(response.historia);
+          if (!pageText) {
+            console.warn('⚠️ La historia recibida está vacía');
+          }
+          
           this.storyPages = [pageText];
           this.needsInteraction = response.necesita_interaccion;
           this.interactionPrompt = response.prompt_interaccion || '';
@@ -97,10 +141,6 @@ export class AppComponent implements OnInit {
           this.isComplete = response.progreso.completado;
           
           this.storyState.appendToStory(pageText);
-        },
-        error: (error) => {
-          console.error('Error generando historia:', error);
-          this.storyState.setState(AppState.STORY_SETUP);
         }
       });
   }
@@ -109,7 +149,7 @@ export class AppComponent implements OnInit {
     const userAge = this.storyState.getUserAge();
     if (!userAge) return;
 
-    console.log('Continuando historia con:', newCharacter);
+    console.log('🚀 Continuando historia con:', newCharacter);
     this.isLoading = true;
     this.storyState.incrementInteraction();
     const interactionNum = this.storyState.getInteractionCount();
@@ -117,12 +157,22 @@ export class AppComponent implements OnInit {
     const fullContext = this.storyPages.join('\n\n');
 
     this.api.continuarHistoria(fullContext, newCharacter, userAge, interactionNum)
-      .pipe(finalize(() => {
-        console.log('Finalizado continuarHistoria');
-        this.isLoading = false;
-      }))
+      .pipe(
+        timeout(35000),
+        finalize(() => {
+          console.log('🏁 Finalizado flujo continuarHistoria');
+          this.isLoading = false;
+        }),
+        catchError(err => {
+          console.error('❌ Error capturado en continuarHistoria:', err);
+          return of(null);
+        })
+      )
       .subscribe({
         next: (response) => {
+          if (!response) return;
+          console.log('✅ Respuesta recibida de continuarHistoria:', response);
+          
           const pageText = this.cleanText(response.historia);
           this.storyPages.push(pageText);
           this.needsInteraction = response.necesita_interaccion;
@@ -131,9 +181,6 @@ export class AppComponent implements OnInit {
           this.isComplete = response.progreso.completado;
           
           this.storyState.appendToStory(pageText);
-        },
-        error: (error) => {
-          console.error('Error continuando historia:', error);
         }
       });
   }

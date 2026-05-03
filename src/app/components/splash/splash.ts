@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StoryStateService, AppState } from '../../services/story-state.service';
+import { LanguageService } from '../../services/language.service';
+import { Subscription } from 'rxjs';
 
 interface Star {
   x: number;
@@ -19,19 +21,34 @@ interface Star {
 export class SplashComponent implements OnInit, OnDestroy {
   stars: Star[] = [];
   private animationFrame: number | null = null;
+  isSpanish = true;
+  private langSub: Subscription | null = null;
 
-  constructor(private storyState: StoryStateService) {}
+  constructor(
+    private storyState: StoryStateService,
+    private languageService: LanguageService
+  ) {}
 
   ngOnInit() {
     this.animate();
+    this.langSub = this.languageService.isSpanish$.subscribe(
+      val => this.isSpanish = val
+    );
   }
 
   ngOnDestroy() {
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
     }
+    this.langSub?.unsubscribe();
   }
 
+  setLanguage(lang: 'es' | 'en') {
+    this.languageService.setLanguage(lang);
+  }
+getText(es: string, en: string): string {
+      return this.isSpanish ? es : en;
+    }
   onMouseMove(event: MouseEvent) {
     const count = 2;
     for (let i = 0; i < count; i++) {

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { StoryStateService, AppState } from '../../services/story-state.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-story-setup',
@@ -9,6 +10,8 @@ import { StoryStateService, AppState } from '../../services/story-state.service'
 })
 export class StorySetupComponent {
   currentStep = 1;
+  isSpanish = true;
+  
 
   selectedCharacter = '';
   selectedPlace = '';
@@ -35,7 +38,14 @@ export class StorySetupComponent {
     { id: 4, name: 'Divertido', icon: '🤪' }
   ];
 
-  constructor(private storyState: StoryStateService) {}
+  constructor(private storyState: StoryStateService, private languageService: LanguageService) {
+
+ this.languageService.isSpanish$.subscribe(
+      isSpanish => this.isSpanish = isSpanish
+    );}
+    getText(es: string, en: string): string {
+      return this.isSpanish ? es : en;
+    }
 
   canContinue(): boolean {
     if (this.currentStep === 1) return !!this.selectedCharacter;

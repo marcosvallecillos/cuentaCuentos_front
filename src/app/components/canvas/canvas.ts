@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-canvas',
@@ -11,6 +12,7 @@ export class CanvasComponent implements AfterViewInit {
   @Output() drawingComplete = new EventEmitter<string>();
 
   private ctx!: CanvasRenderingContext2D;
+  isSpanish = true;
   private isDrawing = false;
   currentColor = '#FF6B6B';
   
@@ -20,7 +22,13 @@ export class CanvasComponent implements AfterViewInit {
   ];
 
   objectLabel = '';
-
+constructor(private languageService: LanguageService
+  ) { this.languageService.isSpanish$.subscribe(
+      isSpanish => this.isSpanish = isSpanish
+    );}
+  getText(es: string, en: string): string {
+      return this.isSpanish ? es : en;
+    }
   ngAfterViewInit() {
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d')!;
