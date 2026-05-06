@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { StoryStateService, AppState } from '../../services/story-state.service';
 import { LanguageService } from '../../services/language.service';
+import { ApiService } from '../../services/api.service';
+import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-story-setup',
@@ -8,7 +10,14 @@ import { LanguageService } from '../../services/language.service';
   templateUrl: './story-setup.html',
   styleUrl: './story-setup.scss'
 })
-export class StorySetupComponent {
+export class StorySetupComponent implements OnInit {
+
+  ngOnInit() {
+    this.getCharacters();
+    this.getPlaces();
+    this.getEmotions();
+  }
+
   currentStep = 1;
   isSpanish = true;
   
@@ -17,28 +26,13 @@ export class StorySetupComponent {
   selectedPlace = '';
   selectedEmotion = '';
 
-  characters = [
-    { id: 1, name: 'Leonel el León', icon: '🦁' },
-    { id: 2, name: 'Pio el Pollito', icon: '🐥' },
-    { id: 3, name: 'Saltos el Conejo', icon: '🐰' },
-    { id: 4, name: 'Miau el Gato', icon: '🐱' }
-  ];
+  characters: any[] = [];
 
-  places = [
-    { id: 1, name: 'El Prado Mágico', icon: '🌸' },
-    { id: 2, name: 'El Bosque Susurrante', icon: '🌳' },
-    { id: 3, name: 'El Espacio Sideral', icon: '🚀' },
-    { id: 4, name: 'Bajo el Mar Azul', icon: '🌊' }
-  ];
+  places: any[] = [];
 
-  emotions = [
-    { id: 1, name: 'Muy Feliz', icon: '😊' },
-    { id: 2, name: 'Valiente', icon: '⚔️' },
-    { id: 3, name: 'Curioso', icon: '🧐' },
-    { id: 4, name: 'Divertido', icon: '🤪' }
-  ];
+  emotions: any[] = [];
 
-  constructor(private storyState: StoryStateService, private languageService: LanguageService) {
+  constructor(private storyState: StoryStateService, private languageService: LanguageService, private apiservice: AdminService, private cdr: ChangeDetectorRef) {
 
  this.languageService.isSpanish$.subscribe(
       isSpanish => this.isSpanish = isSpanish
@@ -69,5 +63,58 @@ export class StorySetupComponent {
       this.selectedEmotion
     );
     this.storyState.setState(AppState.STORY_VIEWING);
+  }
+
+  getCharacters(){
+    this.apiservice.getCatalogItems('protagonista').subscribe({
+      next: (data) => {
+        console.log('Personajes',data);
+        this.characters = data.map(item => {
+          return {
+            id: item.id,
+            name: item.nombre,
+            icon: item.emoji,
+            selected: false
+          };
+
+        });
+        this.cdr.detectChanges();
+      },
+
+      
+      error: (err) => console.log(err)
+    });
+  }
+
+  getPlaces(){
+    this.apiservice.getCatalogItems('lugar').subscribe({
+      next: (data) => {
+        console.log('Lugares',data);
+        this.places = data.map(item => {
+          return {
+            id: item.id,
+            name: item.nombre,
+            icon: item.emoji
+          };
+        });
+      },
+      error: (err) => console.error('Error loading places:', err)
+    });
+  }
+
+  getEmotions(){
+    this.apiservice.getCatalogItems('emocion').subscribe({
+      next: (data) => {
+        console.log('Emociones',data);
+        this.emotions = data.map(item => {
+          return {
+            id: item.id,
+            name: item.nombre,
+            icon: item.emoji
+          };
+        });
+      },
+      error: (err) => console.error('Error loading emotions:', err)
+    });
   }
 }

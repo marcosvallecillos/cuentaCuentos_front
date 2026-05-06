@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { StoryStateService } from '../../../services/story-state.service';
 import { LanguageService } from '../../../services/language.service';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './viewer.html',
   styleUrls: ['./viewer.scss']
 })
-export class StoryViewerComponent implements OnInit {
+export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() storyPages: string[] = [];
   @Input() needsInteraction = false;
   @Input() interactionPrompt = '';
@@ -32,7 +32,7 @@ export class StoryViewerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.currentPageIndex = this.storyPages.length - 1;
+    this.currentPageIndex = Math.max(0, this.storyPages.length - 1);
     
     this.subs.add(this.storyState.isMuted$.subscribe(muted => {
       this.isMuted = muted;
@@ -51,11 +51,14 @@ export class StoryViewerComponent implements OnInit {
     this.stopNarration();
   }
 
-  ngOnChanges() {
-    // Si se añade una nueva página, vamos a ella y narramos
-    if (this.storyPages.length > this.currentPageIndex + 1) {
-      this.currentPageIndex = this.storyPages.length - 1;
-      this.narrate();
+  ngOnChanges(changes: SimpleChanges) {
+    // Cuando storyPages cambia y se añade una nueva página, navegar a ella
+    if (changes['storyPages']) {
+      const newPages: string[] = changes['storyPages'].currentValue || [];
+      if (newPages.length > 0 && newPages.length > this.currentPageIndex + 1) {
+        this.currentPageIndex = newPages.length - 1;
+        setTimeout(() => this.narrate(), 300);
+      }
     }
   }
 

@@ -10,11 +10,15 @@
         <h2 class="step-title">{{getText('¿Quién será el protagonista?', 'Who will be the main character?')}}</h2>
         <div class="options-grid">
           @for (char of characters; track char.id) {
-            <div class="option-card" [class.selected]="selectedCharacter === char.name" (click)="selectedCharacter = char.name">
-              <span class="option-icon">{{ char.icon }}</span>
-              <span class="option-name">{{ char.name }}</span>
-            </div>
-          }
+  <div 
+    class="option-card" 
+    [class.selected]="selectedCharacter === char.name" 
+    (click)="selectedCharacter = char.name"
+  >
+    <span class="option-icon">{{ char.icon }}</span>
+    <span class="option-name">{{ char.name }}</span>
+  </div>
+}
         </div>
       </div>
     }
