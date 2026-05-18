@@ -23,7 +23,17 @@ export class AgeSelectorComponent {
   ) { this.languageService.isSpanish$.subscribe(
       isSpanish => this.isSpanish = isSpanish
     );}
-
+ngOnInit() {
+  // Esperar poquito, luego PREGUNTAR!
+  setTimeout(() => {
+    const pregunta = new SpeechSynthesisUtterance(this.isSpanish ? "¿Qué edad tienes?" : "How old are you?");
+    pregunta.lang = this.isSpanish ? 'es-ES' : 'en-US';
+    pregunta.rate = 0.9;
+    pregunta.pitch = 1.3;
+    
+    window.speechSynthesis.speak(pregunta);
+  }, 500); // Medio segundo esperar
+}
   selectAge(age: number) {
     this.selectedAge = age;
   }

@@ -63,13 +63,23 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get currentStoryPage(): string {
+    if (this.isSuccessPage) return '';
     return this.storyPages[this.currentPageIndex] || '';
   }
 
+  get isSuccessPage(): boolean {
+    return this.isComplete && this.currentPageIndex === this.storyPages.length;
+  }
+
   nextPage() {
-    if (this.currentPageIndex < this.storyPages.length - 1) {
+    const maxPage = this.isComplete ? this.storyPages.length : this.storyPages.length - 1;
+    if (this.currentPageIndex < maxPage) {
       this.currentPageIndex++;
-      this.narrate();
+      if (!this.isSuccessPage) {
+        this.narrate();
+      } else {
+        this.stopNarration();
+      }
     }
   }
 

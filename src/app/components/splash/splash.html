@@ -3,8 +3,8 @@
   <div class="twinkle-stars"></div>
 
   <div class="language-selector">
-    <button [class.active]="isSpanish" (click)="setLanguage('es')">ES</button>
-    <button [class.active]="!isSpanish" (click)="setLanguage('en')">EN</button>
+    <button [class.active]="isSpanish" (click)="setLanguage('es'); $event.stopPropagation()">ES</button>
+    <button [class.active]="!isSpanish" (click)="setLanguage('en'); $event.stopPropagation()">EN</button>
   </div>
   
   <div class="mouse-stars">

@@ -160,38 +160,133 @@
   }
 }
 
-.completion-section {
-  text-align: center;
-  padding: 40px;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+.book-page.success-bg {
+  justify-content: center;
+  align-items: center;
+}
+
+.success-card {
+  background: white;
   border-radius: 20px;
-  color: white;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  max-width: 600px;
+  width: 100%;
+  animation: slideUpFade 0.6s ease-out forwards;
+}
 
-  .completion-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.success-image-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 30px;
+  
+  .success-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
   }
-
-  .restart-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 30px;
-    background: white;
-    color: #ff9a9e;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s;
-
-    &:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    }
+  
+  .magic-star-left, .magic-sparkle-right {
+    position: absolute;
+    font-size: 2rem;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .magic-star-left {
+    top: -20px;
+    left: -30px;
+    animation-delay: 0s;
+  }
+  
+  .magic-sparkle-right {
+    bottom: 20px;
+    right: -40px;
+    animation-delay: 1.5s;
+    font-size: 1.5rem;
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.success-title {
+  color: #2b5c4f;
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+  font-family: 'Cinzel', serif;
+}
+
+.success-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+.medal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  
+  .medal-icon {
+    width: 80px;
+    height: 80px;
+    background: #fcd9d2;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid #f8b4a6;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(248, 180, 166, 0.4);
+    
+    .medal-star {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .medal-text {
+    color: #c48a7e;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+.success-actions {
+  .restart-btn.success {
+    background: #8bba9f;
+    color: white;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(139, 186, 159, 0.4);
+    
+    &:hover {
+      background: #73a388;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 186, 159, 0.5);
+    }
+  }
+}
 @media (max-width: 600px) {
   .story-book {
     padding: 20px;

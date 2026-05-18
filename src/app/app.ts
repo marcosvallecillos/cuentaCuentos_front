@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { AppState, StoryStateService } from './services/story-state.service';
 import { ApiService } from './services/api.service';
 import { LanguageService } from './services/language.service';
@@ -62,7 +62,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private storyState: StoryStateService,
     private api: ApiService,
     private router: Router,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private cdr: ChangeDetectorRef
   ) {
     this.currentState$ = this.storyState.currentState$;
     this.isAdminRoute$ = this.router.events.pipe(
@@ -132,6 +133,7 @@ export class AppComponent implements OnInit, OnDestroy {
         finalize(() => {
           console.log('🏁 Finalizado flujo generarHistoria');
           this.isLoading = false; // Siempre se ejecuta: éxito, error o timeout
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
@@ -139,6 +141,7 @@ export class AppComponent implements OnInit, OnDestroy {
           if (!response) {
             console.warn('⚠️ Respuesta nula, volviendo al setup');
             this.storyState.setState(AppState.STORY_SETUP);
+            this.cdr.detectChanges();
             return;
           }
           console.log('✅ Respuesta recibida de generarHistoria:', response);
@@ -156,9 +159,11 @@ export class AppComponent implements OnInit, OnDestroy {
             this.isComplete = response.progreso?.completado ?? false;
             
             this.storyState.appendToStory(pageText);
+            this.cdr.detectChanges();
           } catch (parseError) {
             console.error('❌ Error procesando respuesta:', parseError);
             this.storyState.setState(AppState.STORY_SETUP);
+            this.cdr.detectChanges();
           }
         },
         error: (err) => {
@@ -166,6 +171,7 @@ export class AppComponent implements OnInit, OnDestroy {
           console.error('❌ Error en subscribe (no debería llegar aquí):', err);
           this.isLoading = false;
           this.storyState.setState(AppState.STORY_SETUP);
+          this.cdr.detectChanges();
         }
       });
   }
@@ -191,6 +197,7 @@ export class AppComponent implements OnInit, OnDestroy {
         finalize(() => {
           console.log('🏁 Finalizado flujo continuarHistoria');
           this.isLoading = false; // Siempre se ejecuta
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
@@ -207,6 +214,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.isComplete = response.progreso?.completado ?? false;
             
             this.storyState.appendToStory(pageText);
+            this.cdr.detectChanges();
           } catch (parseError) {
             console.error('❌ Error procesando continuación:', parseError);
           }
@@ -214,6 +222,7 @@ export class AppComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('❌ Error en subscribe continuarHistoria:', err);
           this.isLoading = false;
+          this.cdr.detectChanges();
         }
       });
   }

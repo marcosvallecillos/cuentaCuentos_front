@@ -2,27 +2,59 @@
   <div class="story-book">
     @if (storyPages.length > 0) {
       <div class="book-header">
-        <span class="page-indicator">Página {{ currentPageIndex + 1 }} de {{ storyPages.length }}</span>
+        @if (isSuccessPage) {
+          <span class="page-indicator">{{ isSpanish ? '¡Éxito Lector!' : 'Reading Success!' }}</span>
+        } @else {
+          <span class="page-indicator">{{ isSpanish ? 'Página' : 'Page' }} {{ currentPageIndex + 1 }} {{ isSpanish ? 'de' : 'of' }} {{ storyPages.length }}</span>
+        }
         <div class="book-controls">
-          <button class="nav-btn" [disabled]="currentPageIndex === 0" (click)="prevPage()">⬅️ Anterior</button>
-          <button class="nav-btn" [disabled]="currentPageIndex === storyPages.length - 1" (click)="nextPage()">Siguiente ➡️</button>
+          <button class="nav-btn" [disabled]="currentPageIndex === 0" (click)="prevPage()">⬅️ {{ isSpanish ? 'Anterior' : 'Previous' }}</button>
+          <button class="nav-btn" [disabled]="currentPageIndex === (isComplete ? storyPages.length : storyPages.length - 1)" (click)="nextPage()">{{ isSpanish ? 'Siguiente' : 'Next' }} ➡️</button>
         </div>
       </div>
 
-      <div class="book-page">
-        <div class="story-content">
-          <p class="story-text" [class.narrating]="isNarrating">
-            {{ currentStoryPage }}
-          </p>
-        </div>
-        
-        <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()">
-          {{ isNarrating ? '🔊 Escuchando...' : '🔈 Escuchar otra vez' }}
-        </div>
+      <div class="book-page" [class.success-bg]="isSuccessPage">
+        @if (isSuccessPage) {
+          <div class="success-card">
+            <div class="success-image-container">
+              <span class="magic-star-left">⭐</span>
+              <img src="../../images/success_dragon.png" alt="Happy Dragon" class="success-img"/>
+              <span class="magic-sparkle-right">✨</span>
+            </div>
+            
+            <h2 class="success-title">{{ isSpanish ? '¡Felicidades, Pequeño Lector!' : 'Congratulations, Little Reader!' }}</h2>
+            <p class="success-subtitle">
+              {{ isSpanish ? 'Has completado tu aventura de hoy con valentía y curiosidad. ¡Leo está muy orgulloso de ti!' : 'You have completed your adventure today with bravery and curiosity. Leo is very proud of you!' }}
+            </p>
+            
+            <div class="medal-container">
+              <div class="medal-icon">
+                <span class="medal-star">⭐</span>
+              </div>
+              <p class="medal-text">{{ isSpanish ? 'INSIGNIA DE ORO GANADA' : 'GOLD BADGE EARNED' }}</p>
+            </div>
+            
+            <div class="success-actions">
+              <button class="restart-btn success" (click)="onRestart()">
+                📖 {{ isSpanish ? 'Fin de la Historia' : 'End of Story' }}
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="story-content">
+            <p class="story-text" [class.narrating]="isNarrating">
+              {{ currentStoryPage }}
+            </p>
+          </div>
+          
+          <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()">
+            {{ isNarrating ? (isSpanish ? '🔊 Escuchando...' : '🔊 Listening...') : (isSpanish ? '🔈 Escuchar otra vez' : '🔈 Listen again') }}
+          </div>
+        }
       </div>
 
-      <!-- Secciones de Interacción y Final (Solo en la última página) -->
-      @if (currentPageIndex === storyPages.length - 1) {
+      <!-- Secciones de Interacción (Solo en la última página normal) -->
+      @if (currentPageIndex === storyPages.length - 1 && !isSuccessPage) {
         <div class="footer-actions">
           @if (needsInteraction && !isComplete) {
             <div class="interaction-section">
@@ -34,13 +66,6 @@
                   </button>
                 }
               </div>
-            </div>
-          }
-
-          @if (isComplete) {
-            <div class="completion-section">
-              <h3 class="completion-title">✨ ¡El cuento ha terminado! ✨</h3>
-              <button class="restart-btn" (click)="onRestart()">🎒 Crear otra aventura</button>
             </div>
           }
         </div>

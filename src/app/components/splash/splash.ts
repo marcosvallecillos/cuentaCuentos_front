@@ -34,6 +34,7 @@ export class SplashComponent implements OnInit, OnDestroy {
     this.langSub = this.languageService.isSpanish$.subscribe(
       val => this.isSpanish = val
     );
+    
   }
 
   ngOnDestroy() {
@@ -78,12 +79,24 @@ getText(es: string, en: string): string {
   isNavigating = false;
 
   startApp() {
+     const utterance = new SpeechSynthesisUtterance("¡Vamos allá!");
+  utterance.lang = 'es-ES';
+  utterance.rate = 1.0;
+  utterance.pitch = 1.2;
+  
+  window.speechSynthesis.speak(utterance);
+  
+  // Esperar voz terminar, luego ir siguiente pantalla
+  utterance.onend = () => {
+    this.storyState.setState(AppState.AGE_SELECT);
+  };
     if (this.isNavigating) return;
     this.isNavigating = true;
     setTimeout(() => {
       this.storyState.setState(AppState.AGE_SELECT);
     }, 1500);
   }
+
 }
 
 class Particle {
