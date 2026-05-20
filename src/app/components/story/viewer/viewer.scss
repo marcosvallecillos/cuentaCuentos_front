@@ -353,7 +353,8 @@
   .story-book-spread {
     flex-direction: column;
   }
-  .book-page.left-page {
-    display: none; /* Hide illustration on small screens to prioritize text */
+  .book-page {
+    border-right: none;
+    border-bottom: 1px solid #e0d8c3;
   }
 }

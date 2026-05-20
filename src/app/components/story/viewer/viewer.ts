@@ -23,7 +23,7 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
   characterName = 'Leo';
   private subs = new Subscription();
 
-  currentPageIndex = 0;
+  currentSpreadIndex = 0;
   isNarrating = false;
   private utterance: SpeechSynthesisUtterance | null = null;
 
@@ -33,7 +33,7 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.currentPageIndex = Math.max(0, this.storyPages.length - 1);
+    this.goToLastSpread();
     
     this.subs.add(this.storyState.isMuted$.subscribe(muted => {
       this.isMuted = muted;
@@ -59,40 +59,70 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Cuando storyPages cambia y se añade una nueva página, navegar a ella
     if (changes['storyPages']) {
       const newPages: string[] = changes['storyPages'].currentValue || [];
-      if (newPages.length > 0 && newPages.length > this.currentPageIndex + 1) {
-        this.currentPageIndex = newPages.length - 1;
+      if (newPages.length > 0) {
+        this.goToLastSpread();
         setTimeout(() => this.narrate(), 300);
       }
     }
   }
 
-  get currentStoryPage(): string {
-    if (this.isSuccessPage) return '';
-    return this.storyPages[this.currentPageIndex] || '';
+  get totalSlots(): number {
+    return this.storyPages.length + (this.isComplete ? 1 : 0);
   }
 
-  get isSuccessPage(): boolean {
-    return this.isComplete && this.currentPageIndex === this.storyPages.length;
+  get totalSpreads(): number {
+    return Math.ceil(this.totalSlots / 2);
+  }
+
+  goToLastSpread() {
+    if (this.totalSpreads > 0) {
+      this.currentSpreadIndex = this.totalSpreads - 1;
+    } else {
+      this.currentSpreadIndex = 0;
+    }
+  }
+
+  get leftSlotIndex(): number {
+    return this.currentSpreadIndex * 2;
+  }
+
+  get rightSlotIndex(): number {
+    return this.currentSpreadIndex * 2 + 1;
+  }
+
+  get leftPageText(): string {
+    return this.leftSlotIndex < this.storyPages.length ? this.storyPages[this.leftSlotIndex] : '';
+  }
+
+  get rightPageText(): string {
+    return this.rightSlotIndex < this.storyPages.length ? this.storyPages[this.rightSlotIndex] : '';
+  }
+
+  get isLeftSuccess(): boolean {
+    return this.isComplete && this.leftSlotIndex === this.storyPages.length;
+  }
+
+  get isRightSuccess(): boolean {
+    return this.isComplete && this.rightSlotIndex === this.storyPages.length;
+  }
+
+  get showInteractionOnRight(): boolean {
+    if (this.isComplete || !this.needsInteraction) return false;
+    return this.currentSpreadIndex === Math.floor((this.storyPages.length - 1) / 2);
   }
 
   nextPage() {
-    const maxPage = this.isComplete ? this.storyPages.length : this.storyPages.length - 1;
-    if (this.currentPageIndex < maxPage) {
-      this.currentPageIndex++;
-      if (!this.isSuccessPage) {
-        this.narrate();
-      } else {
-        this.stopNarration();
-      }
+    if (this.currentSpreadIndex < this.totalSpreads - 1) {
+      this.currentSpreadIndex++;
+      this.narrate();
     }
   }
 
   prevPage() {
-    if (this.currentPageIndex > 0) {
-      this.currentPageIndex--;
+    if (this.currentSpreadIndex > 0) {
+      this.currentSpreadIndex--;
       this.narrate();
     }
   }
@@ -103,7 +133,11 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       
-      this.utterance = new SpeechSynthesisUtterance(this.currentStoryPage);
+      // Narrar texto de izquierda y derecha
+      const textToRead = `${this.leftPageText}. ${this.rightPageText}`;
+      if (!textToRead.trim()) return;
+
+      this.utterance = new SpeechSynthesisUtterance(textToRead);
       this.utterance.lang = this.isSpanish ? 'es-ES' : 'en-US';
       this.utterance.rate = 0.9;
       this.utterance.pitch = 1.1;
@@ -114,8 +148,7 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
       
       this.utterance.onend = () => {
         this.isNarrating = false;
-        // Solo narramos el prompt si estamos en la última página y se necesita interacción
-        if (this.needsInteraction && this.currentPageIndex === this.storyPages.length - 1) {
+        if (this.showInteractionOnRight) {
           this.narratePrompt();
         }
       };

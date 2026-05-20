@@ -2,87 +2,77 @@
   <div class="story-book-spread">
     @if (storyPages.length > 0) {
       
-      <!-- LEFT PAGE: Illustration -->
+      <!-- LEFT PAGE -->
       <div class="book-page left-page">
-        <div class="page-content illustration-container">
-          <div class="magic-illustration">
-             <div class="sparkles">✨🌟✨</div>
-             <div class="character-name">{{ characterName }}</div>
-             <div class="book-binding-shadow"></div>
+        <div class="book-binding-shadow"></div>
+        <div class="page-content text-content-container">
+          <div class="book-header">
+            @if (isLeftSuccess) {
+              <span class="page-indicator">{{ isSpanish ? '¡Éxito Lector!' : 'Reading Success!' }}</span>
+            } @else if (leftPageText) {
+              <span class="page-indicator">{{ isSpanish ? 'Página' : 'Page' }} {{ leftSlotIndex + 1 }}</span>
+            }
           </div>
+
+          @if (isLeftSuccess) {
+            <ng-container *ngTemplateOutlet="successCard"></ng-container>
+          } @else if (leftPageText) {
+            <div class="story-content">
+              <p class="story-text" [class.narrating]="isNarrating">
+                {{ leftPageText }}
+              </p>
+            </div>
+          }
         </div>
       </div>
 
-      <!-- RIGHT PAGE: Story Text & Controls -->
+      <!-- RIGHT PAGE -->
       <div class="book-page right-page">
         <div class="book-binding-shadow-right"></div>
-        <div class="page-content text-content-container">
-          <div class="book-header">
-            @if (isSuccessPage) {
-              <span class="page-indicator">{{ isSpanish ? '¡Éxito Lector!' : 'Reading Success!' }}</span>
-            } @else {
-              <span class="page-indicator">{{ isSpanish ? 'Página' : 'Page' }} {{ currentPageIndex + 1 }}</span>
-            }
-            <div class="book-controls">
-              <button class="nav-btn" [disabled]="currentPageIndex === 0" (click)="prevPage()">⬅️</button>
-              <button class="nav-btn" [disabled]="currentPageIndex === (isComplete ? storyPages.length : storyPages.length - 1)" (click)="nextPage()">➡️</button>
+        <div class="page-content text-content-container" style="position: relative;">
+          
+          <!-- Botón de Narración compartido para el spread -->
+          @if (leftPageText || rightPageText) {
+            <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()" style="position: absolute; top: -50px; right: 0; z-index: 10;">
+              {{ isNarrating ? (isSpanish ? '🔊 Escuchando...' : '🔊 Listening...') : (isSpanish ? '🔈 Escuchar página' : '🔈 Listen page') }}
             </div>
+          }
+
+          <div class="book-header" style="justify-content: flex-end;">
+            <div class="book-controls">
+              <button class="nav-btn" [disabled]="currentSpreadIndex === 0" (click)="prevPage()">⬅️</button>
+              <button class="nav-btn" [disabled]="currentSpreadIndex >= totalSpreads - 1" (click)="nextPage()">➡️</button>
+            </div>
+            @if (isRightSuccess) {
+              <span class="page-indicator" style="margin-left: 15px;">{{ isSpanish ? '¡Éxito Lector!' : 'Reading Success!' }}</span>
+            } @else if (rightPageText) {
+              <span class="page-indicator" style="margin-left: 15px;">{{ isSpanish ? 'Página' : 'Page' }} {{ rightSlotIndex + 1 }}</span>
+            }
           </div>
 
-          @if (isSuccessPage) {
-            <div class="success-card">
-              <div class="success-image-container">
-                <span class="magic-star-left">⭐</span>
-                <img src="../../images/success_dragon.png" alt="Happy Dragon" class="success-img"/>
-                <span class="magic-sparkle-right">✨</span>
-              </div>
-              
-              <h2 class="success-title">{{ isSpanish ? '¡Felicidades, Pequeño Lector!' : 'Congratulations, Little Reader!' }}</h2>
-              <p class="success-subtitle">
-                {{ isSpanish ? 'Has completado tu aventura con valentía. ¡' + characterName + ' está muy orgulloso de ti!' : 'You completed your adventure. ' + characterName + ' is proud of you!' }}
-              </p>
-              
-              <div class="medal-container">
-                <div class="medal-icon">
-                  <span class="medal-star">⭐</span>
-                </div>
-                <p class="medal-text">{{ isSpanish ? 'INSIGNIA DE ORO' : 'GOLD BADGE' }}</p>
-              </div>
-              
-              <div class="success-actions">
-                <button class="restart-btn success" (click)="onRestart()">
-                  📖 {{ isSpanish ? 'Fin de la Historia' : 'End of Story' }}
-                </button>
-              </div>
-            </div>
-          } @else {
+          @if (isRightSuccess) {
+            <ng-container *ngTemplateOutlet="successCard"></ng-container>
+          } @else if (rightPageText) {
             <div class="story-content">
               <p class="story-text" [class.narrating]="isNarrating">
-                {{ currentStoryPage }}
+                {{ rightPageText }}
               </p>
             </div>
-            
-            <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()">
-              {{ isNarrating ? (isSpanish ? '🔊 Escuchando...' : '🔊 Listening...') : (isSpanish ? '🔈 Escuchar otra vez' : '🔈 Listen again') }}
-            </div>
-            
-            <!-- Interactions at bottom of right page -->
-            @if (currentPageIndex === storyPages.length - 1 && !isSuccessPage) {
-              <div class="footer-actions">
-                @if (needsInteraction && !isComplete) {
-                  <div class="interaction-section">
-                    <h3 class="interaction-prompt">{{ interactionPrompt }}</h3>
-                    <div class="options-grid">
-                      @for (opcion of opciones; track opcion) {
-                        <button class="option-card" (click)="onSelectCharacter(opcion)">
-                          <span class="option-text">{{ opcion }}</span>
-                        </button>
-                      }
-                    </div>
-                  </div>
-                }
+          }
+
+          @if (showInteractionOnRight) {
+            <div class="footer-actions">
+              <div class="interaction-section">
+                <h3 class="interaction-prompt">{{ interactionPrompt }}</h3>
+                <div class="options-grid">
+                  @for (opcion of opciones; track opcion) {
+                    <button class="option-card" (click)="onSelectCharacter(opcion)">
+                      <span class="option-text">{{ opcion }}</span>
+                    </button>
+                  }
+                </div>
               </div>
-            }
+            </div>
           }
         </div>
       </div>
@@ -95,3 +85,32 @@
     }
   </div>
 </div>
+
+<!-- Success Card Template -->
+<ng-template #successCard>
+  <div class="success-card">
+    <div class="success-image-container">
+      <span class="magic-star-left">⭐</span>
+      <img src="../../images/success_dragon.png" alt="Happy Dragon" class="success-img"/>
+      <span class="magic-sparkle-right">✨</span>
+    </div>
+    
+    <h2 class="success-title">{{ isSpanish ? '¡Felicidades, Pequeño Lector!' : 'Congratulations, Little Reader!' }}</h2>
+    <p class="success-subtitle">
+      {{ isSpanish ? 'Has completado tu aventura con valentía. ¡' + characterName + ' está muy orgulloso de ti!' : 'You completed your adventure. ' + characterName + ' is proud of you!' }}
+    </p>
+    
+    <div class="medal-container">
+      <div class="medal-icon">
+        <span class="medal-star">⭐</span>
+      </div>
+      <p class="medal-text">{{ isSpanish ? 'INSIGNIA DE ORO' : 'GOLD BADGE' }}</p>
+    </div>
+    
+    <div class="success-actions">
+      <button class="restart-btn success" (click)="onRestart()">
+        📖 {{ isSpanish ? 'Fin de la Historia' : 'End of Story' }}
+      </button>
+    </div>
+  </div>
+</ng-template>
