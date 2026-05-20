@@ -15,6 +15,7 @@ export class StoryHistory {
   selectedStory: Story | null = null;
   filterGroup: string = '';
   loading = false;
+  viewingFullStory = false;
 
   constructor(
     private adminService: AdminService,
@@ -72,6 +73,15 @@ export class StoryHistory {
 
   closeModal() {
     this.selectedStory = null;
+    this.viewingFullStory = false;
+  }
+
+  openFullStory() {
+    this.viewingFullStory = true;
+  }
+
+  closeFullStory() {
+    this.viewingFullStory = false;
   }
 
   getAgeColor(grupo: string): string {

@@ -8,6 +8,7 @@ export interface StoryResponse {
     completado: boolean;
     interaccion_actual: number;
   };
+  story_id?: number;
 }
 
 export interface AgeGroup {

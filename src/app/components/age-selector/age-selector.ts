@@ -16,7 +16,7 @@ export class AgeSelectorComponent {
     { range: '6-8', label: 'Aventureros', color: '#87CEEB' },
     { range: '9-12', label: 'Soñadores', color: '#98FB98' }
   ];
-
+   message: string = "";
   isSpanish = true;
   private langSub: Subscription | null = null;
   constructor(private storyState: StoryStateService,    private languageService: LanguageService
@@ -41,9 +41,19 @@ getText(es: string, en: string): string {
       return this.isSpanish ? es : en;
     }
   continue() {
-    if (this.selectedAge) {
+    if (this.selectedAge && this.selectedAge >= 3 && this.selectedAge <= 12) {
       this.storyState.setUserAge(this.selectedAge);
       this.storyState.setState(AppState.STORY_SETUP);
+    }
+    else {
+      
+      this.message = this.isSpanish ? "Por favor, introduce un número entre 3 y 12" : "Please enter a number between 3 and 12";
+      const pregunta = new SpeechSynthesisUtterance(this.message);
+      pregunta.lang = this.isSpanish ? 'es-ES' : 'en-US';
+      pregunta.rate = 0.9;
+      pregunta.pitch = 1.3;
+      
+      window.speechSynthesis.speak(pregunta);
     }
 
   }

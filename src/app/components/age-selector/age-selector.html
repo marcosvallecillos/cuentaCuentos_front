@@ -11,6 +11,7 @@
     <p class="subtitle">{{getText('Introduce un número como 6, luego pulsa Enter para comenzar', 'Enter a number like 6, then tap Done to begin')}}</p>
 
     <div class="age-input-group">
+      
       <input 
         type="number" 
         [(ngModel)]="selectedAge" 
@@ -18,7 +19,9 @@
         max="12" 
         class="age-number-input"
         placeholder="6">
-        
+        @if (message != ''){
+      <div class="speech-bubble">{{ message}}</div>
+}
       <button 
         class="continue-btn" 
         [disabled]="!selectedAge"
@@ -27,4 +30,6 @@
       </button>
     </div>
   </div>
+  
+
 </div>

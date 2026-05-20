@@ -193,3 +193,12 @@
     cursor: not-allowed;
   }
 }
+
+.speech-bubble {
+  color: #f30000; /* Color de texto oscuro para mejor lectura */
+  font-family: "Comic Sans MS", "Arial", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+  position: relative;
+}

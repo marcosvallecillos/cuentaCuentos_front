@@ -159,6 +159,11 @@ export class AppComponent implements OnInit, OnDestroy {
             this.isComplete = response.progreso?.completado ?? false;
             
             this.storyState.appendToStory(pageText);
+            
+            if (response.story_id) {
+              this.storyState.setStoryId(response.story_id);
+            }
+            
             this.cdr.detectChanges();
           } catch (parseError) {
             console.error('❌ Error procesando respuesta:', parseError);
@@ -186,8 +191,14 @@ export class AppComponent implements OnInit, OnDestroy {
     const interactionNum = this.storyState.getInteractionCount();
     
     const fullContext = this.storyPages.join('\n\n');
+    const storyId = this.storyState.getStoryId();
 
-    this.api.continuarHistoria(fullContext, newCharacter, userAge, interactionNum)
+    if (!storyId) {
+      console.error('❌ No se encontró storyId en el estado, las interacciones no se guardarán en DB correctamente');
+      // Continuamos de todas formas para no bloquear la experiencia, pero con warning
+    }
+
+    this.api.continuarHistoria(fullContext, newCharacter, userAge, interactionNum, storyId || 0)
       .pipe(
         timeout(30000),
         catchError(err => {

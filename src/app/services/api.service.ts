@@ -23,13 +23,15 @@ export class ApiService {
     historiaActual: string,
     nuevoObjeto: string,
     edad: number,
-    interaccionNumero: number
+    interaccionNumero: number,
+    storyId: number
   ): Observable<StoryResponse> {
     return this.http.post<StoryResponse>(`${this.apiUrl}/continuar-historia`, {
       historia_actual: historiaActual,
       nuevo_objeto: nuevoObjeto,
       edad,
-      interaccion_numero: interaccionNumero
+      interaccion_numero: interaccionNumero,
+      story_id: storyId
     });
   }
 

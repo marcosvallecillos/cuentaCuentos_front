@@ -1,75 +1,92 @@
 <div class="story-viewer-container">
-  <div class="story-book">
+  <div class="story-book-spread">
     @if (storyPages.length > 0) {
-      <div class="book-header">
-        @if (isSuccessPage) {
-          <span class="page-indicator">{{ isSpanish ? '¡Éxito Lector!' : 'Reading Success!' }}</span>
-        } @else {
-          <span class="page-indicator">{{ isSpanish ? 'Página' : 'Page' }} {{ currentPageIndex + 1 }} {{ isSpanish ? 'de' : 'of' }} {{ storyPages.length }}</span>
-        }
-        <div class="book-controls">
-          <button class="nav-btn" [disabled]="currentPageIndex === 0" (click)="prevPage()">⬅️ {{ isSpanish ? 'Anterior' : 'Previous' }}</button>
-          <button class="nav-btn" [disabled]="currentPageIndex === (isComplete ? storyPages.length : storyPages.length - 1)" (click)="nextPage()">{{ isSpanish ? 'Siguiente' : 'Next' }} ➡️</button>
+      
+      <!-- LEFT PAGE: Illustration -->
+      <div class="book-page left-page">
+        <div class="page-content illustration-container">
+          <div class="magic-illustration">
+             <div class="sparkles">✨🌟✨</div>
+             <div class="character-name">{{ characterName }}</div>
+             <div class="book-binding-shadow"></div>
+          </div>
         </div>
       </div>
 
-      <div class="book-page" [class.success-bg]="isSuccessPage">
-        @if (isSuccessPage) {
-          <div class="success-card">
-            <div class="success-image-container">
-              <span class="magic-star-left">⭐</span>
-              <img src="../../images/success_dragon.png" alt="Happy Dragon" class="success-img"/>
-              <span class="magic-sparkle-right">✨</span>
-            </div>
-            
-            <h2 class="success-title">{{ isSpanish ? '¡Felicidades, Pequeño Lector!' : 'Congratulations, Little Reader!' }}</h2>
-            <p class="success-subtitle">
-              {{ isSpanish ? 'Has completado tu aventura de hoy con valentía y curiosidad. ¡Leo está muy orgulloso de ti!' : 'You have completed your adventure today with bravery and curiosity. Leo is very proud of you!' }}
-            </p>
-            
-            <div class="medal-container">
-              <div class="medal-icon">
-                <span class="medal-star">⭐</span>
-              </div>
-              <p class="medal-text">{{ isSpanish ? 'INSIGNIA DE ORO GANADA' : 'GOLD BADGE EARNED' }}</p>
-            </div>
-            
-            <div class="success-actions">
-              <button class="restart-btn success" (click)="onRestart()">
-                📖 {{ isSpanish ? 'Fin de la Historia' : 'End of Story' }}
-              </button>
+      <!-- RIGHT PAGE: Story Text & Controls -->
+      <div class="book-page right-page">
+        <div class="book-binding-shadow-right"></div>
+        <div class="page-content text-content-container">
+          <div class="book-header">
+            @if (isSuccessPage) {
+              <span class="page-indicator">{{ isSpanish ? '¡Éxito Lector!' : 'Reading Success!' }}</span>
+            } @else {
+              <span class="page-indicator">{{ isSpanish ? 'Página' : 'Page' }} {{ currentPageIndex + 1 }}</span>
+            }
+            <div class="book-controls">
+              <button class="nav-btn" [disabled]="currentPageIndex === 0" (click)="prevPage()">⬅️</button>
+              <button class="nav-btn" [disabled]="currentPageIndex === (isComplete ? storyPages.length : storyPages.length - 1)" (click)="nextPage()">➡️</button>
             </div>
           </div>
-        } @else {
-          <div class="story-content">
-            <p class="story-text" [class.narrating]="isNarrating">
-              {{ currentStoryPage }}
-            </p>
-          </div>
-          
-          <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()">
-            {{ isNarrating ? (isSpanish ? '🔊 Escuchando...' : '🔊 Listening...') : (isSpanish ? '🔈 Escuchar otra vez' : '🔈 Listen again') }}
-          </div>
-        }
-      </div>
 
-      <!-- Secciones de Interacción (Solo en la última página normal) -->
-      @if (currentPageIndex === storyPages.length - 1 && !isSuccessPage) {
-        <div class="footer-actions">
-          @if (needsInteraction && !isComplete) {
-            <div class="interaction-section">
-              <h3 class="interaction-prompt">{{ interactionPrompt }}</h3>
-              <div class="options-grid">
-                @for (opcion of opciones; track opcion) {
-                  <button class="option-card" (click)="onSelectCharacter(opcion)">
-                    <span class="option-text">{{ opcion }}</span>
-                  </button>
+          @if (isSuccessPage) {
+            <div class="success-card">
+              <div class="success-image-container">
+                <span class="magic-star-left">⭐</span>
+                <img src="../../images/success_dragon.png" alt="Happy Dragon" class="success-img"/>
+                <span class="magic-sparkle-right">✨</span>
+              </div>
+              
+              <h2 class="success-title">{{ isSpanish ? '¡Felicidades, Pequeño Lector!' : 'Congratulations, Little Reader!' }}</h2>
+              <p class="success-subtitle">
+                {{ isSpanish ? 'Has completado tu aventura con valentía. ¡' + characterName + ' está muy orgulloso de ti!' : 'You completed your adventure. ' + characterName + ' is proud of you!' }}
+              </p>
+              
+              <div class="medal-container">
+                <div class="medal-icon">
+                  <span class="medal-star">⭐</span>
+                </div>
+                <p class="medal-text">{{ isSpanish ? 'INSIGNIA DE ORO' : 'GOLD BADGE' }}</p>
+              </div>
+              
+              <div class="success-actions">
+                <button class="restart-btn success" (click)="onRestart()">
+                  📖 {{ isSpanish ? 'Fin de la Historia' : 'End of Story' }}
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="story-content">
+              <p class="story-text" [class.narrating]="isNarrating">
+                {{ currentStoryPage }}
+              </p>
+            </div>
+            
+            <div class="narration-indicator" [class.active]="isNarrating" (click)="isNarrating ? stopNarration() : narrate()">
+              {{ isNarrating ? (isSpanish ? '🔊 Escuchando...' : '🔊 Listening...') : (isSpanish ? '🔈 Escuchar otra vez' : '🔈 Listen again') }}
+            </div>
+            
+            <!-- Interactions at bottom of right page -->
+            @if (currentPageIndex === storyPages.length - 1 && !isSuccessPage) {
+              <div class="footer-actions">
+                @if (needsInteraction && !isComplete) {
+                  <div class="interaction-section">
+                    <h3 class="interaction-prompt">{{ interactionPrompt }}</h3>
+                    <div class="options-grid">
+                      @for (opcion of opciones; track opcion) {
+                        <button class="option-card" (click)="onSelectCharacter(opcion)">
+                          <span class="option-text">{{ opcion }}</span>
+                        </button>
+                      }
+                    </div>
+                  </div>
                 }
               </div>
-            </div>
+            }
           }
         </div>
-      }
+      </div>
+
     } @else {
       <div class="empty-state" style="text-align: center; padding: 2rem; color: #fef08a;">
         <div class="magic-sparkles" style="font-size: 3rem; margin-bottom: 1rem;">✨✨✨</div>

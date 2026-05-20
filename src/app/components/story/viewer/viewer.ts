@@ -20,6 +20,7 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
   
   isMuted = false;
   isSpanish = true;
+  characterName = 'Leo';
   private subs = new Subscription();
 
   currentPageIndex = 0;
@@ -37,6 +38,12 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
     this.subs.add(this.storyState.isMuted$.subscribe(muted => {
       this.isMuted = muted;
       if (muted) this.stopNarration();
+    }));
+
+    this.subs.add(this.storyState.character$.subscribe(name => {
+      if (name) {
+        this.characterName = name;
+      }
     }));
 
     this.subs.add(this.languageService.isSpanish$.subscribe(isSp => {
