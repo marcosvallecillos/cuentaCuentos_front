@@ -1,4 +1,20 @@
-<div class="login-container">
+<div class="login-container" (mousemove)="onMouseMove($event)">
+  <div class="stars-overlay"></div>
+  
+  <div class="mouse-stars">
+    @for (star of stars; track $index) {
+    <div
+      class="mouse-star"
+      [style.left.px]="star.x"
+      [style.top.px]="star.y"
+      [style.opacity]="star.opacity"
+      [style.font-size.px]="star.size"
+    >
+      ✦
+    </div>  
+    } 
+  </div>
+
   <div class="login-card">
     <div class="login-header">
       <h1>🔐 Panel de Administración</h1>
