@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StoryStateService, AppState } from '../../services/story-state.service';
 import { LanguageService } from '../../services/language.service';
 import { Subscription } from 'rxjs';
+import { ApiService } from '../../services/api.service';
 
 interface Star {
   x: number;
@@ -23,10 +24,18 @@ export class SplashComponent implements OnInit, OnDestroy {
   private animationFrame: number | null = null;
   isSpanish = true;
   private langSub: Subscription | null = null;
+  
+  showConsentModal = false;
+  consentParental = false;
+  aceptacionPrivacidad = false;
+  aceptacionTratamiento = false;
+  
+  isSubmittingAuth = false;
 
   constructor(
     private storyState: StoryStateService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private apiService: ApiService
   ) {}
 
   ngOnInit() {
@@ -79,22 +88,66 @@ getText(es: string, en: string): string {
   isNavigating = false;
 
   startApp() {
-     const utterance = new SpeechSynthesisUtterance("¡Vamos allá!");
-  utterance.lang = 'es-ES';
-  utterance.rate = 1.0;
-  utterance.pitch = 1.2;
-  
-  window.speechSynthesis.speak(utterance);
-  
-  // Esperar voz terminar, luego ir siguiente pantalla
-  utterance.onend = () => {
-    this.storyState.setState(AppState.AGE_SELECT);
-  };
-    if (this.isNavigating) return;
+    if (this.isNavigating || this.showConsentModal) return;
+    
+    const hasConsent = localStorage.getItem('parentalConsent') === 'true';
+    if (!hasConsent) {
+      this.showConsentModal = true;
+      return;
+    }
+
+    this.proceedWithApp();
+  }
+
+  proceedWithApp() {
     this.isNavigating = true;
+    const utterance = new SpeechSynthesisUtterance("¡Vamos allá!");
+    utterance.lang = 'es-ES';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.2;
+    
+    window.speechSynthesis.speak(utterance);
+    
+    utterance.onend = () => {
+      this.storyState.setState(AppState.AGE_SELECT);
+    };
+
     setTimeout(() => {
       this.storyState.setState(AppState.AGE_SELECT);
     }, 1500);
+  }
+
+  get canAcceptConsent(): boolean {
+    return this.consentParental && this.aceptacionPrivacidad && this.aceptacionTratamiento;
+  }
+
+  acceptConsent(event: Event) {
+    event.stopPropagation();
+    if (!this.canAcceptConsent || this.isSubmittingAuth) return;
+
+    this.isSubmittingAuth = true;
+    this.apiService.registrarConsentimientoParental({
+      consent_parental: this.consentParental,
+      aceptacion_privacidad: this.aceptacionPrivacidad,
+      aceptacion_tratamiento: this.aceptacionTratamiento
+    }).subscribe({
+      next: (res) => {
+        localStorage.setItem('parentalConsent', 'true');
+        this.showConsentModal = false;
+        this.isSubmittingAuth = false;
+        this.proceedWithApp();
+      },
+      error: (err) => {
+        console.error('Error registering consent', err);
+        this.isSubmittingAuth = false;
+        alert(this.isSpanish ? 'Error al registrar el consentimiento. Por favor, inténtelo de nuevo.' : 'Error registering consent. Please try again.');
+      }
+    });
+  }
+
+  closeConsentModal(event: Event) {
+    event.stopPropagation();
+    this.showConsentModal = false;
   }
 
 }

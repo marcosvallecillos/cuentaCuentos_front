@@ -38,4 +38,8 @@ export class ApiService {
   obtenerGruposEdad(): Observable<any> {
     return this.http.get(`${this.apiUrl}/grupos-edad`);
   }
+
+  registrarConsentimientoParental(data: { consent_parental: boolean, aceptacion_privacidad: boolean, aceptacion_tratamiento: boolean }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/consentimiento-parental`, data);
+  }
 }

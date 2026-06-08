@@ -311,3 +311,104 @@
 
 // Particle stars on mouse move could be added via JS, but for now lets use the background animation.
 // If you want actual particles following the mouse, we need a small canvas or DOM manipulation.
+
+.consent-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.consent-modal-content {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  color: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(167, 139, 250, 0.2);
+  
+  h2 {
+    font-family: 'Cinzel', serif;
+    color: #fef08a;
+    margin-top: 0;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #e2e8f0;
+    line-height: 1.5;
+  }
+}
+
+.consent-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.consent-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  input {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: #a78bfa;
+    cursor: pointer;
+  }
+  
+  .label-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #cbd5e1;
+  }
+}
+
+.accept-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+  }
+  
+  &:disabled {
+    background: #475569;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+}

@@ -25,7 +25,7 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
 
   currentSpreadIndex = 0;
   isNarrating = false;
-  private utterance: SpeechSynthesisUtterance | null = null;
+  private narrador: SpeechSynthesisUtterance | null = null;
 
   constructor(
     private storyState: StoryStateService,
@@ -137,34 +137,34 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
       const textToRead = `${this.leftPageText}. ${this.rightPageText}`;
       if (!textToRead.trim()) return;
 
-      this.utterance = new SpeechSynthesisUtterance(textToRead);
-      this.utterance.lang = this.isSpanish ? 'es-ES' : 'en-US';
-      this.utterance.rate = 0.9;
-      this.utterance.pitch = 1.1;
+      this.narrador = new SpeechSynthesisUtterance(textToRead);
+      this.narrador.lang = this.isSpanish ? 'es-ES' : 'en-US';
+      this.narrador.rate = 0.9;
+      this.narrador.pitch = 1.1;
       
-      this.utterance.onstart = () => {
+      this.narrador.onstart = () => {
         this.isNarrating = true;
       };
       
-      this.utterance.onend = () => {
+      this.narrador.onend = () => {
         this.isNarrating = false;
         if (this.showInteractionOnRight) {
           this.narratePrompt();
         }
       };
       
-      window.speechSynthesis.speak(this.utterance);
+      window.speechSynthesis.speak(this.narrador);
     }
   }
 
   private narratePrompt() {
     if (this.isMuted) return;
     if (this.interactionPrompt) {
-      const promptUtterance = new SpeechSynthesisUtterance(this.interactionPrompt);
-      promptUtterance.lang = this.isSpanish ? 'es-ES' : 'en-US';
-      promptUtterance.rate = 0.85;
-      promptUtterance.pitch = 1.2;
-      window.speechSynthesis.speak(promptUtterance);
+      const promptnarrador = new SpeechSynthesisUtterance(this.interactionPrompt);
+      promptnarrador.lang = this.isSpanish ? 'es-ES' : 'en-US';
+      promptnarrador.rate = 0.85;
+      promptnarrador.pitch = 1.2;
+      window.speechSynthesis.speak(promptnarrador);
     }
   }
 
@@ -182,4 +182,4 @@ export class StoryViewerComponent implements OnInit, OnChanges, OnDestroy {
     this.stopNarration();
     this.restartStory.emit();
   }
-}
+}

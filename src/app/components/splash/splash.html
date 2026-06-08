@@ -39,4 +39,41 @@
       <p class="tap-text">{{ getText('✦ PULSA EN CUALQUIER LUGAR ✦', '✦ TAP ANYWHERE TO OPEN ✦') }}</p>
     </div>
   </div>
+
+  @if (showConsentModal) {
+    <div class="consent-modal-backdrop" (click)="closeConsentModal($event)">
+      <div class="consent-modal-content" (click)="$event.stopPropagation()">
+        <h2>{{ getText('Consentimiento Parental Requerido', 'Parental Consent Required') }}</h2>
+        <p>{{ getText('Para continuar, por favor confirme los siguientes consentimientos:', 'To continue, please confirm the following consents:') }}</p>
+        
+        <div class="consent-options">
+          <label class="consent-checkbox">
+            <input type="checkbox" [checked]="consentParental" (change)="consentParental = $any($event.target).checked">
+            <span class="checkmark"></span>
+            <span class="label-text">{{ getText('Soy el padre/madre/tutor legal y doy mi consentimiento para que el menor use esta aplicación.', 'I am the parent/legal guardian and give my consent for the minor to use this application.') }}</span>
+          </label>
+          
+          <label class="consent-checkbox">
+            <input type="checkbox" [checked]="aceptacionPrivacidad" (change)="aceptacionPrivacidad = $any($event.target).checked">
+            <span class="checkmark"></span>
+            <span class="label-text">{{ getText('Acepto la Política de Privacidad de la aplicación.', 'I accept the application Privacy Policy.') }}</span>
+          </label>
+          
+          <label class="consent-checkbox">
+            <input type="checkbox" [checked]="aceptacionTratamiento" (change)="aceptacionTratamiento = $any($event.target).checked">
+            <span class="checkmark"></span>
+            <span class="label-text">{{ getText('Consiento el tratamiento de los datos generados durante la sesión de forma anónima para la generación de cuentos.', 'I consent to the anonymous processing of the data generated during the session for story generation.') }}</span>
+          </label>
+        </div>
+
+        <button class="accept-btn" [disabled]="!canAcceptConsent || isSubmittingAuth" (click)="acceptConsent($event)">
+          @if (isSubmittingAuth) {
+            {{ getText('Registrando...', 'Registering...') }}
+          } @else {
+            {{ getText('Aceptar y Continuar', 'Accept and Continue') }}
+          }
+        </button>
+      </div>
+    </div>
+  }
 </div>
