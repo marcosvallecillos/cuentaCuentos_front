@@ -39,7 +39,7 @@ export class CatalogManager {
   loadItems() {
     this.loading = true;
     console.log('Cargando catálogo...');
-    this.adminService.getCatalogItems(this.filterType || undefined)
+    this.adminService.getCatalogItems(this.filterType || undefined, true)
       .pipe(finalize(() => {
         console.log('Finalizado carga de catálogo');
         this.loading = false;

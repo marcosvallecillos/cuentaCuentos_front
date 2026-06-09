@@ -122,8 +122,8 @@ export class AdminService {
 
   // ============= CATALOG =============
 
-  getCatalogItems(tipo?: string): Observable<CatalogItem[]> {
-    let url = `${this.apiUrl}/catalog/?todas=true`;
+  getCatalogItems(tipo?: string, todas: boolean = false): Observable<CatalogItem[]> {
+    let url = `${this.apiUrl}/catalog/?${todas ? 'todas=true' : 'activo=true'}`;
     if (tipo) {
       url += `&tipo=${tipo}`;
     }
