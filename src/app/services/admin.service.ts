@@ -43,12 +43,12 @@ export interface StoryStats {
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = 'https://cuentacuentos.up.railway.app/api';
   private tokenSubject = new BehaviorSubject<string | null>(this.getStoredToken());
-  
+
   token$ = this.tokenSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getStoredToken(): string | null {
     return localStorage.getItem('admin_token');
@@ -122,8 +122,8 @@ export class AdminService {
 
   // ============= CATALOG =============
 
-  getCatalogItems(tipo?: string, activo: boolean = true): Observable<CatalogItem[]> {
-    let url = `${this.apiUrl}/catalog/?activo=${activo}`;
+  getCatalogItems(tipo?: string): Observable<CatalogItem[]> {
+    let url = `${this.apiUrl}/catalog/?todas=true`;
     if (tipo) {
       url += `&tipo=${tipo}`;
     }

@@ -7,9 +7,9 @@ import { StoryResponse } from '../models/story.model';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = 'https://cuentacuentos.up.railway.app/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   generarHistoria(personaje: string, lugar: string, emocion: string, edad: number): Observable<StoryResponse> {
     return this.http.post<StoryResponse>(`${this.apiUrl}/generar-historia`, {

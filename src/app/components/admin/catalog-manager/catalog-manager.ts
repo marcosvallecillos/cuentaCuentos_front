@@ -34,28 +34,24 @@ export class CatalogManager {
 
   ngOnInit() {
     this.loadItems();
-    this.cdr.detectChanges();
   }
 
   loadItems() {
     this.loading = true;
-    this.cdr.detectChanges();
     console.log('Cargando catálogo...');
     this.adminService.getCatalogItems(this.filterType || undefined)
       .pipe(finalize(() => {
         console.log('Finalizado carga de catálogo');
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); // <-- Solo dejamos este para después del API asíncrono si el componente push hace falta, pero como es Default no haría falta. Aún así lo quitamos de la ruta síncrona.
       }))
       .subscribe({
         next: (data) => {
           console.log('Catálogo cargado:', data.length);
           this.items = data;
-          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Error loading catalog:', err);
-          this.cdr.detectChanges();
         }
       });
   }
